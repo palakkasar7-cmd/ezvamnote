@@ -101,16 +101,17 @@ function ProductPage() {
             </div>
 
             <div className="mt-10 flex items-baseline gap-4">
-              <span className="font-display text-5xl font-medium">₹{product.price}</span>
-              {product.originalPrice && (
+              <span className="font-display text-5xl font-medium">₹{price}</span>
+              {originalPrice && originalPrice > price && (
                 <>
-                  <span className="text-xl text-muted-foreground line-through">₹{product.originalPrice}</span>
+                  <span className="text-xl text-muted-foreground line-through">₹{originalPrice}</span>
                   <span className="border border-foreground px-2 py-0.5 text-xs uppercase tracking-widest">
-                    Save ₹{product.originalPrice - product.price}
+                    Save ₹{originalPrice - price}
                   </span>
                 </>
               )}
             </div>
+
 
             <div className="mt-8 flex flex-wrap gap-3">
               <button
