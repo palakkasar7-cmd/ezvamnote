@@ -1,5 +1,11 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { PRODUCTS, type Product } from "./products";
+import {
+  getPriceSnapshot,
+  getOriginalPriceSnapshot,
+  subscribeOverrides,
+} from "./cover-names";
+
 
 const KEY = "notevault.cart.v1";
 type CartMap = Record<string, number>;
