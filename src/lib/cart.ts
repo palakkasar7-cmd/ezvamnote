@@ -56,9 +56,11 @@ function subscribe(cb: () => void) {
     if (e.key === KEY) cb();
   };
   window.addEventListener("storage", onStorage);
+  const unsubOverrides = subscribeOverrides(cb);
   return () => {
     listeners.delete(cb);
     window.removeEventListener("storage", onStorage);
+    unsubOverrides();
   };
 }
 
@@ -68,6 +70,7 @@ export function useCart() {
     () => JSON.stringify(read()),
     () => "{}",
   );
+
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
   const parsed: CartMap = hydrated ? JSON.parse(map) : {};
