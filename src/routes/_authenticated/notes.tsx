@@ -34,10 +34,12 @@ export const Route = createFileRoute("/_authenticated/notes")({
 function NotesPage() {
   const { subject, type } = Route.useSearch();
   const navigate = Route.useNavigate();
+  const [quickView, setQuickView] = useState<Product | null>(null);
 
   const filtered = PRODUCTS.filter(
     (p) => (!subject || p.subject === subject) && (!type || p.type === type),
   );
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
