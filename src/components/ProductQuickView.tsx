@@ -15,15 +15,16 @@ export function ProductQuickView({
 }) {
   const handleAdd = () => {
     addToCart(product.slug, 1);
-    toast.success("Added to cart");
+    toast.success("Added to cart", { description: product.title });
   };
 
   const handleBuy = () => {
     addToCart(product.slug, 1);
+    toast.success("Heading to checkout", { description: product.title });
     onClose();
-    // navigate to cart
     window.location.href = "/cart";
   };
+
 
   const full = Math.floor(product.rating);
   const half = product.rating - full >= 0.5;
