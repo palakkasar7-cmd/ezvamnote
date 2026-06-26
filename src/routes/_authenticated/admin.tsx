@@ -168,19 +168,23 @@ function AdminPage() {
                   <td className="p-3 align-top">
                     {existing ? (
                       <div>
-                        <div>{existing.file_name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {(existing.size_bytes / 1024 / 1024).toFixed(2)} MB
-                        </div>
-                        <button
-                          onClick={() => handlePreview(p.slug)}
-                          className="mt-1 text-xs underline underline-offset-2"
+                        <a
+                          href={existing.storage_path}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="break-all text-xs underline underline-offset-2"
                         >
-                          Preview PDF
+                          {existing.storage_path}
+                        </a>
+                        <button
+                          onClick={() => handlePreview(existing)}
+                          className="mt-1 block text-xs underline underline-offset-2"
+                        >
+                          Open link
                         </button>
                       </div>
                     ) : (
-                      <span className="text-muted-foreground">— not uploaded —</span>
+                      <span className="text-muted-foreground">— no link —</span>
                     )}
                   </td>
                   <td className="p-3 align-top text-right">
@@ -192,35 +196,33 @@ function AdminPage() {
                       >
                         Edit name
                       </Button>
-                      <label className="inline-block">
+                      <div className="flex w-full max-w-xs gap-2">
                         <Input
-                          type="file"
-                          accept="application/pdf"
-                          disabled={uploading === p.slug}
-                          onChange={(e) => {
-                            const f = e.target.files?.[0];
-                            if (f) handleUpload(p.slug, f);
-                            e.target.value = "";
-                          }}
-                          className="hidden"
+                          type="url"
+                          placeholder="https://…/notes.pdf"
+                          value={urlDrafts[p.slug] ?? ""}
+                          onChange={(e) =>
+                            setUrlDrafts((d) => ({ ...d, [p.slug]: e.target.value }))
+                          }
+                          disabled={savingUrl === p.slug}
+                          className="rounded-none"
                         />
                         <Button
-                          asChild
-                          disabled={uploading === p.slug}
+                          onClick={() => handleSaveUrl(p.slug)}
+                          disabled={savingUrl === p.slug}
                           variant="outline"
                           className="rounded-none"
                         >
-                          <span>
-                            {uploading === p.slug
-                              ? "Uploading..."
-                              : existing
-                                ? "Replace PDF"
-                                : "Upload PDF"}
-                          </span>
+                          {savingUrl === p.slug
+                            ? "Saving..."
+                            : existing
+                              ? "Update"
+                              : "Save"}
                         </Button>
-                      </label>
+                      </div>
                     </div>
                   </td>
+
                 </tr>
               );
             })}
