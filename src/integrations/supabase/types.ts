@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       note_files: {
         Row: {
+          cover_name: string | null
           created_at: string
           file_name: string
           size_bytes: number
@@ -25,6 +26,7 @@ export type Database = {
           uploaded_by: string
         }
         Insert: {
+          cover_name?: string | null
           created_at?: string
           file_name: string
           size_bytes: number
@@ -34,6 +36,7 @@ export type Database = {
           uploaded_by: string
         }
         Update: {
+          cover_name?: string | null
           created_at?: string
           file_name?: string
           size_bytes?: number
@@ -71,6 +74,27 @@ export type Database = {
           expires_at?: string
           id?: string
           phone?: string
+        }
+        Relationships: []
+      }
+      product_overrides: {
+        Row: {
+          cover_name: string | null
+          slug: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          cover_name?: string | null
+          slug: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          cover_name?: string | null
+          slug?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
