@@ -9,8 +9,12 @@ import { NotebookCover } from "@/components/NotebookCover";
 import {
   refreshCoverNames,
   saveCoverName,
+  savePrice,
   getCoverNameSnapshot,
+  getPriceSnapshot,
+  getOriginalPriceSnapshot,
 } from "@/lib/cover-names";
+
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
