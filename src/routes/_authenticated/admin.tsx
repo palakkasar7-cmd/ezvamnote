@@ -250,6 +250,13 @@ function AdminPage() {
         />
       )}
 
+      {chaptersFor && (
+        <ChaptersManager
+          product={chaptersFor}
+          onClose={() => setChaptersFor(null)}
+        />
+      )}
+
       <OrdersPanel />
     </div>
   );
