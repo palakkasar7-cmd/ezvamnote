@@ -6,6 +6,7 @@ import { PRODUCTS, type Product } from "@/lib/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NotebookCover } from "@/components/NotebookCover";
+import { ChaptersManager } from "@/components/ChaptersManager";
 import {
   refreshCoverNames,
   saveCoverName,
@@ -46,6 +47,7 @@ function AdminPage() {
   const [savingUrl, setSavingUrl] = useState<string | null>(null);
   const [urlDrafts, setUrlDrafts] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Product | null>(null);
+  const [chaptersFor, setChaptersFor] = useState<Product | null>(null);
 
   const load = async () => {
     const [{ data: fileData }] = await Promise.all([
@@ -196,6 +198,13 @@ function AdminPage() {
                       >
                         Edit name
                       </Button>
+                      <Button
+                        variant="outline"
+                        className="rounded-none"
+                        onClick={() => setChaptersFor(p)}
+                      >
+                        Chapters
+                      </Button>
                       <div className="flex w-full max-w-xs gap-2">
                         <Input
                           type="url"
@@ -238,6 +247,13 @@ function AdminPage() {
             setEditing(null);
             load();
           }}
+        />
+      )}
+
+      {chaptersFor && (
+        <ChaptersManager
+          product={chaptersFor}
+          onClose={() => setChaptersFor(null)}
         />
       )}
 
