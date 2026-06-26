@@ -83,6 +83,9 @@ function AuthPage() {
         type: "magiclink",
       });
       if (error) throw new Error(error.message);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("notevault:lastPhone", phone);
+      }
       const { data: profile } = await supabase
         .from("profiles")
         .select("full_name")
