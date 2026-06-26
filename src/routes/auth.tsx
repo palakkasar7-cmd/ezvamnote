@@ -1,11 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { sendPhoneOtp, verifyPhoneOtp } from "@/lib/phone-auth.functions";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -28,18 +30,18 @@ const emailSchema = z
 
 function AuthPage() {
   const navigate = useNavigate();
+  const sendOtpFn = useServerFn(sendPhoneOtp);
+  const verifyOtpFn = useServerFn(verifyPhoneOtp);
   const [step, setStep] = useState<"phone" | "otp" | "profile">("phone");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/" });
-      else setChecking(false);
     });
   }, [navigate]);
 
@@ -50,16 +52,15 @@ function AuthPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      phone: `+91${parsed.data}`,
-    });
-    setLoading(false);
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      await sendOtpFn({ data: { phone: `+91${parsed.data}` } });
+      toast.success("OTP sent to your phone");
+      setStep("otp");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to send OTP");
+    } finally {
+      setLoading(false);
     }
-    toast.success("OTP sent to your phone");
-    setStep("otp");
   };
 
   const verifyOtp = async () => {
@@ -69,25 +70,29 @@ function AuthPage() {
       return;
     }
     setLoading(true);
-    const { data, error } = await supabase.auth.verifyOtp({
-      phone: `+91${phone}`,
-      token: parsed.data,
-      type: "sms",
-    });
-    setLoading(false);
-    if (error || !data.user) {
-      toast.error(error?.message ?? "Invalid code");
-      return;
-    }
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("full_name")
-      .eq("id", data.user.id)
-      .maybeSingle();
-    if (profile?.full_name) {
-      navigate({ to: "/" });
-    } else {
-      setStep("profile");
+    try {
+      const result = await verifyOtpFn({
+        data: { phone: `+91${phone}`, code: parsed.data },
+      });
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: result.tokenHash,
+        type: "magiclink",
+      });
+      if (error) throw new Error(error.message);
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", result.userId!)
+        .maybeSingle();
+      if (profile?.full_name) {
+        navigate({ to: "/" });
+      } else {
+        setStep("profile");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Invalid code");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -124,10 +129,6 @@ function AuthPage() {
     toast.success("Welcome to NoteVault");
     navigate({ to: "/" });
   };
-
-  if (checking) {
-    return <div className="flex min-h-screen items-center justify-center bg-background" />;
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
