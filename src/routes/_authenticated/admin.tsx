@@ -47,6 +47,7 @@ function AdminPage() {
   const [savingUrl, setSavingUrl] = useState<string | null>(null);
   const [urlDrafts, setUrlDrafts] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Product | null>(null);
+  const [chaptersFor, setChaptersFor] = useState<Product | null>(null);
 
   const load = async () => {
     const [{ data: fileData }] = await Promise.all([
