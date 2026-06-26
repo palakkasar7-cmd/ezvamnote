@@ -26,6 +26,8 @@ const FEATURED = ["physics-complete-std12", "chemistry-complete-std12", "maths-c
 
 function HomePage() {
   const featured = FEATURED.map((s) => PRODUCTS.find((p) => p.slug === s)!).filter(Boolean);
+  const [quickView, setQuickView] = useState<Product | null>(null);
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
