@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      note_chapters: {
+        Row: {
+          chapter_number: number
+          created_at: string
+          created_by: string | null
+          id: string
+          pdf_url: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          chapter_number: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          pdf_url: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          chapter_number?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          pdf_url?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       note_files: {
         Row: {
           cover_name: string | null
