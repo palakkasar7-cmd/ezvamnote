@@ -6,7 +6,7 @@ import { PRODUCTS, findProduct } from "@/lib/products";
 import { addToCart } from "@/lib/cart";
 import { useState } from "react";
 
-export const Route = createFileRoute("/notes/$slug")({
+export const Route = createFileRoute("/_authenticated/notes/$slug")({
   loader: ({ params }) => {
     const product = findProduct(params.slug);
     if (!product) throw notFound();

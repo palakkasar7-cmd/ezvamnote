@@ -12,7 +12,7 @@ const searchSchema = z.object({
 type Search = z.infer<typeof searchSchema>;
 
 
-export const Route = createFileRoute("/notes")({
+export const Route = createFileRoute("/_authenticated/notes")({
   validateSearch: (s) => searchSchema.parse(s),
   head: () => ({
     meta: [
