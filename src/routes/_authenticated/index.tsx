@@ -223,7 +223,12 @@ function HomePage() {
         </div>
       </section>
 
+      {quickView && (
+        <ProductQuickView product={quickView} onClose={() => setQuickView(null)} />
+      )}
+
       <SiteFooter />
+
     </div>
   );
 }
