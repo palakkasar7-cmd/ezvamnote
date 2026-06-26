@@ -162,7 +162,7 @@ function ProductPage() {
                 <NotebookCover product={p} />
                 <div className="mt-4">
                   <div className="font-display text-lg font-semibold group-hover:underline">{p.title}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">₹{p.price}</div>
+                  <div className="mt-1 text-sm text-muted-foreground"><Price slug={p.slug} price={p.price} originalPrice={p.originalPrice} showStrike={false} /></div>
                 </div>
               </Link>
             ))}
