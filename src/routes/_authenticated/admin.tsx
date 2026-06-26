@@ -112,7 +112,7 @@ function AdminPage() {
         Admin · Manage Notes
       </h1>
       <p className="hand mt-2 text-muted-foreground">
-        Upload PDFs and edit the name shown on each notebook cover.
+        Paste a PDF link for each note and edit the name shown on the cover.
       </p>
 
       <div className="mt-10 border border-foreground">
@@ -122,7 +122,7 @@ function AdminPage() {
               <th className="p-3">Product</th>
               <th className="p-3">Cover name</th>
               <th className="p-3">Price</th>
-              <th className="p-3">Current file</th>
+              <th className="p-3">PDF link</th>
               <th className="p-3 text-right">Actions</th>
             </tr>
           </thead>
