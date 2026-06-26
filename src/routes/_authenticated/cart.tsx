@@ -3,7 +3,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useCart, setQty, removeFromCart } from "@/lib/cart";
 
-export const Route = createFileRoute("/cart")({
+export const Route = createFileRoute("/_authenticated/cart")({
   head: () => ({
     meta: [
       { title: "Cart — NoteVault" },

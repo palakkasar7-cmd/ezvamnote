@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
 import { PRODUCTS } from "@/lib/products";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "NoteVault — Handwritten Std 12 & MHT-CET Notes" },
