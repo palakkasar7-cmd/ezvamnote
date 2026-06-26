@@ -43,6 +43,10 @@ function AuthPage() {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/" });
     });
+    if (typeof window !== "undefined") {
+      const saved = window.localStorage.getItem("notevault:lastPhone");
+      if (saved && /^[6-9]\d{9}$/.test(saved)) setPhone(saved);
+    }
   }, [navigate]);
 
   const sendOtp = async () => {
@@ -79,6 +83,9 @@ function AuthPage() {
         type: "magiclink",
       });
       if (error) throw new Error(error.message);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("notevault:lastPhone", phone);
+      }
       const { data: profile } = await supabase
         .from("profiles")
         .select("full_name")
