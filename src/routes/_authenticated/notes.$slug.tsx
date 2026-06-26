@@ -4,7 +4,9 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
 import { PRODUCTS, findProduct } from "@/lib/products";
 import { addToCart } from "@/lib/cart";
+import { usePrice } from "@/lib/cover-names";
 import { useState } from "react";
+
 
 export const Route = createFileRoute("/_authenticated/notes/$slug")({
   loader: ({ params }) => {
