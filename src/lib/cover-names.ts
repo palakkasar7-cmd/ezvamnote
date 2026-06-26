@@ -1,7 +1,12 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-type OverrideMap = Record<string, string>;
+type OverrideRow = {
+  cover_name?: string | null;
+  price?: number | null;
+  original_price?: number | null;
+};
+type OverrideMap = Record<string, OverrideRow>;
 
 let overrides: OverrideMap = {};
 let loaded = false;
@@ -17,10 +22,14 @@ async function load() {
   loading = (async () => {
     const { data } = await supabase
       .from("product_overrides")
-      .select("slug, cover_name");
+      .select("slug, cover_name, price, original_price");
     const map: OverrideMap = {};
     (data ?? []).forEach((r: any) => {
-      if (r.cover_name) map[r.slug] = r.cover_name;
+      map[r.slug] = {
+        cover_name: r.cover_name,
+        price: r.price,
+        original_price: r.original_price,
+      };
     });
     overrides = map;
     loaded = true;
@@ -29,32 +38,60 @@ async function load() {
   return loading;
 }
 
-export function subscribeCoverNames(cb: () => void) {
+export function subscribeOverrides(cb: () => void) {
   listeners.add(cb);
   load();
   return () => listeners.delete(cb);
 }
 
-export function getCoverNameSnapshot(slug: string): string | undefined {
+export function getOverrideSnapshot(slug: string): OverrideRow | undefined {
   return overrides[slug];
 }
 
-export function getAllOverridesSnapshot(): OverrideMap {
-  return overrides;
+export function getCoverNameSnapshot(slug: string): string | undefined {
+  return overrides[slug]?.cover_name ?? undefined;
 }
 
-export function setCoverNameLocal(slug: string, name: string | null) {
-  if (name && name.trim().length > 0) overrides[slug] = name.trim();
-  else delete overrides[slug];
+export function getPriceSnapshot(slug: string): number | undefined {
+  const v = overrides[slug]?.price;
+  return v == null ? undefined : v;
+}
+
+export function getOriginalPriceSnapshot(slug: string): number | undefined {
+  const v = overrides[slug]?.original_price;
+  return v == null ? undefined : v;
+}
+
+export function setOverrideLocal(slug: string, row: OverrideRow) {
+  overrides[slug] = { ...overrides[slug], ...row };
   emit();
 }
 
 export function useCoverName(slug: string): string | undefined {
   return useSyncExternalStore(
-    subscribeCoverNames,
+    subscribeOverrides,
     () => getCoverNameSnapshot(slug),
     () => undefined,
   );
+}
+
+export function usePriceKey(slug: string): string {
+  return useSyncExternalStore(
+    subscribeOverrides,
+    () => {
+      const o = overrides[slug];
+      return `${o?.price ?? ""}|${o?.original_price ?? ""}`;
+    },
+    () => "|",
+  );
+}
+
+export function usePrice(slug: string, fallback: { price: number; originalPrice?: number }) {
+  usePriceKey(slug);
+  return {
+    price: getPriceSnapshot(slug) ?? fallback.price,
+    originalPrice: getOriginalPriceSnapshot(slug) ?? fallback.originalPrice,
+  };
 }
 
 export async function refreshCoverNames() {
@@ -73,5 +110,22 @@ export async function saveCoverName(slug: string, name: string) {
     updated_at: new Date().toISOString(),
   });
   if (error) throw error;
-  setCoverNameLocal(slug, trimmed || null);
+  setOverrideLocal(slug, { cover_name: trimmed || null });
+}
+
+export async function savePrice(
+  slug: string,
+  price: number | null,
+  originalPrice: number | null,
+) {
+  const { data: userData } = await supabase.auth.getUser();
+  const { error } = await supabase.from("product_overrides").upsert({
+    slug,
+    price,
+    original_price: originalPrice,
+    updated_by: userData.user?.id,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) throw error;
+  setOverrideLocal(slug, { price, original_price: originalPrice });
 }

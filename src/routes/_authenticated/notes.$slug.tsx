@@ -4,7 +4,11 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
 import { PRODUCTS, findProduct } from "@/lib/products";
 import { addToCart } from "@/lib/cart";
+import { usePrice } from "@/lib/cover-names";
+import { Price } from "@/components/Price";
 import { useState } from "react";
+
+
 
 export const Route = createFileRoute("/_authenticated/notes/$slug")({
   loader: ({ params }) => {
@@ -43,8 +47,13 @@ export const Route = createFileRoute("/_authenticated/notes/$slug")({
 
 function ProductPage() {
   const { product } = Route.useLoaderData();
+  const { price, originalPrice } = usePrice(product.slug, {
+    price: product.price,
+    originalPrice: product.originalPrice,
+  });
   const [added, setAdded] = useState(false);
   const related = PRODUCTS.filter((p) => p.subject === product.subject && p.slug !== product.slug).slice(0, 3);
+
 
   const handleAdd = () => {
     addToCart(product.slug);
@@ -94,16 +103,17 @@ function ProductPage() {
             </div>
 
             <div className="mt-10 flex items-baseline gap-4">
-              <span className="font-display text-5xl font-medium">₹{product.price}</span>
-              {product.originalPrice && (
+              <span className="font-display text-5xl font-medium">₹{price}</span>
+              {originalPrice && originalPrice > price && (
                 <>
-                  <span className="text-xl text-muted-foreground line-through">₹{product.originalPrice}</span>
+                  <span className="text-xl text-muted-foreground line-through">₹{originalPrice}</span>
                   <span className="border border-foreground px-2 py-0.5 text-xs uppercase tracking-widest">
-                    Save ₹{product.originalPrice - product.price}
+                    Save ₹{originalPrice - price}
                   </span>
                 </>
               )}
             </div>
+
 
             <div className="mt-8 flex flex-wrap gap-3">
               <button
@@ -154,7 +164,7 @@ function ProductPage() {
                 <NotebookCover product={p} />
                 <div className="mt-4">
                   <div className="font-display text-lg font-semibold group-hover:underline">{p.title}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">₹{p.price}</div>
+                  <div className="mt-1 text-sm text-muted-foreground"><Price slug={p.slug} price={p.price} originalPrice={p.originalPrice} showStrike={false} /></div>
                 </div>
               </Link>
             ))}

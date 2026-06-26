@@ -1,5 +1,11 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { PRODUCTS, type Product } from "./products";
+import {
+  getPriceSnapshot,
+  getOriginalPriceSnapshot,
+  subscribeOverrides,
+} from "./cover-names";
+
 
 const KEY = "notevault.cart.v1";
 type CartMap = Record<string, number>;
@@ -50,9 +56,11 @@ function subscribe(cb: () => void) {
     if (e.key === KEY) cb();
   };
   window.addEventListener("storage", onStorage);
+  const unsubOverrides = subscribeOverrides(cb);
   return () => {
     listeners.delete(cb);
     window.removeEventListener("storage", onStorage);
+    unsubOverrides();
   };
 }
 
@@ -62,13 +70,18 @@ export function useCart() {
     () => JSON.stringify(read()),
     () => "{}",
   );
+
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
   const parsed: CartMap = hydrated ? JSON.parse(map) : {};
   const items = Object.entries(parsed)
     .map(([slug, qty]) => {
-      const product = PRODUCTS.find((p) => p.slug === slug);
-      return product ? { product, qty } : null;
+      const base = PRODUCTS.find((p) => p.slug === slug);
+      if (!base) return null;
+      const price = getPriceSnapshot(slug) ?? base.price;
+      const originalPrice = getOriginalPriceSnapshot(slug) ?? base.originalPrice;
+      const product: Product = { ...base, price, originalPrice };
+      return { product, qty };
     })
     .filter(Boolean) as { product: Product; qty: number }[];
   const count = items.reduce((s, i) => s + i.qty, 0);

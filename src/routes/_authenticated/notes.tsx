@@ -3,7 +3,9 @@ import { z } from "zod";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
+import { Price } from "@/components/Price";
 import { PRODUCTS, SUBJECTS, NOTE_TYPES, type Subject, type NoteType } from "@/lib/products";
+
 
 const searchSchema = z.object({
   subject: z.enum(["Physics", "Chemistry", "Mathematics", "Biology"]).optional(),
@@ -123,12 +125,16 @@ function NotesPage() {
                   </div>
                   <div className="mt-1 text-sm text-muted-foreground">{p.author}</div>
                   <div className="mt-3 flex items-baseline gap-2">
-                    <span className="font-display text-2xl font-medium">₹{p.price}</span>
-                    {p.originalPrice && (
-                      <span className="text-sm text-muted-foreground line-through">₹{p.originalPrice}</span>
-                    )}
+                    <Price
+                      slug={p.slug}
+                      price={p.price}
+                      originalPrice={p.originalPrice}
+                      className="font-display text-2xl font-medium"
+                      strikeClassName="text-sm text-muted-foreground line-through ml-2"
+                    />
                     <span className="ml-auto text-xs text-muted-foreground">★ {p.rating} · {p.reviews}</span>
                   </div>
+
                 </div>
               </Link>
             ))}
