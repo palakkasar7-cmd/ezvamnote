@@ -179,8 +179,8 @@ function CheckoutPage() {
                 </Button>
               )}
               {order.status === "approved" && (
-                <Button onClick={() => navigate({ to: "/notes" })} className="rounded-none">
-                  View notes
+                <Button onClick={() => navigate({ to: "/library" })} className="rounded-none">
+                  Go to My Purchases
                 </Button>
               )}
               <div className="text-xs text-muted-foreground">Order #{order.id.slice(0, 8)}</div>

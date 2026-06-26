@@ -44,6 +44,7 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-8 text-sm md:flex">
           <Link to="/" className="hover:underline underline-offset-4">Home</Link>
           <Link to="/notes" className="hover:underline underline-offset-4">All Notes</Link>
+          <Link to="/library" className="hover:underline underline-offset-4">My Purchases</Link>
           <a href="/#why" className="hover:underline underline-offset-4">Why handwritten</a>
           <a href="/#faq" className="hover:underline underline-offset-4">FAQ</a>
           {isAdmin && (
