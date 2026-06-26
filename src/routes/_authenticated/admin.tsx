@@ -255,14 +255,28 @@ function EditNameModal({
   onSaved: () => void;
 }) {
   const initial = getCoverNameSnapshot(product.slug) ?? product.author;
+  const initialPrice = getPriceSnapshot(product.slug) ?? product.price;
+  const initialOrig = getOriginalPriceSnapshot(product.slug) ?? product.originalPrice ?? 0;
   const [name, setName] = useState(initial);
+  const [price, setPrice] = useState<string>(String(initialPrice));
+  const [origPrice, setOrigPrice] = useState<string>(initialOrig ? String(initialOrig) : "");
   const [saving, setSaving] = useState(false);
 
+  const parsedPrice = Number.parseInt(price, 10);
+  const parsedOrig = origPrice.trim() === "" ? null : Number.parseInt(origPrice, 10);
+  const priceValid = Number.isFinite(parsedPrice) && parsedPrice >= 0;
+  const origValid = parsedOrig === null || (Number.isFinite(parsedOrig) && parsedOrig >= 0);
+
   const handleSave = async () => {
+    if (!priceValid || !origValid) {
+      toast.error("Enter valid prices");
+      return;
+    }
     setSaving(true);
     try {
       await saveCoverName(product.slug, name);
-      toast.success("Cover name updated");
+      await savePrice(product.slug, parsedPrice, parsedOrig);
+      toast.success("Saved");
       onSaved();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Save failed");
@@ -275,7 +289,8 @@ function EditNameModal({
     setSaving(true);
     try {
       await saveCoverName(product.slug, "");
-      toast.success("Reset to default");
+      await savePrice(product.slug, null, null);
+      toast.success("Reset to defaults");
       onSaved();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Reset failed");
@@ -290,7 +305,7 @@ function EditNameModal({
       onClick={onClose}
     >
       <div
-        className="grid w-full max-w-4xl gap-8 border border-foreground bg-background p-8 md:grid-cols-2"
+        className="grid max-h-[90vh] w-full max-w-4xl gap-8 overflow-y-auto border border-foreground bg-background p-8 md:grid-cols-2"
         onClick={(e) => e.stopPropagation()}
       >
         <div>
@@ -300,19 +315,31 @@ function EditNameModal({
           <div className="mt-4">
             <NotebookCover product={product} nameOverride={name} large />
           </div>
+          <div className="mt-6 border border-foreground p-4">
+            <div className="text-xs uppercase tracking-widest text-muted-foreground">Price preview</div>
+            <div className="mt-2 flex items-baseline gap-3">
+              <span className="font-display text-3xl font-medium">
+                ₹{priceValid ? parsedPrice : "—"}
+              </span>
+              {parsedOrig != null && origValid && parsedOrig > parsedPrice && (
+                <>
+                  <span className="text-sm text-muted-foreground line-through">₹{parsedOrig}</span>
+                  <span className="border border-foreground px-2 py-0.5 text-[10px] uppercase tracking-widest">
+                    Save ₹{parsedOrig - parsedPrice}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col">
           <div className="text-xs uppercase tracking-widest text-muted-foreground">
-            Edit cover name
+            Edit product
           </div>
           <h2 className="mt-2 font-display text-2xl font-semibold">
             {product.title}
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Only the part before the first comma shows on the cover. Default:{" "}
-            <span className="text-foreground">{product.author}</span>
-          </p>
 
           <label className="mt-6 text-sm font-medium">Cover name</label>
           <Input
@@ -322,11 +349,45 @@ function EditNameModal({
             placeholder={product.author}
             autoFocus
           />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Only the part before the first comma shows on the cover. Default: {product.author}
+          </p>
+
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-medium">Price (₹)</label>
+              <Input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="mt-2 rounded-none"
+                placeholder={String(product.price)}
+              />
+              <p className="mt-1 text-xs text-muted-foreground">default ₹{product.price}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium">MRP / strike (₹)</label>
+              <Input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                value={origPrice}
+                onChange={(e) => setOrigPrice(e.target.value)}
+                className="mt-2 rounded-none"
+                placeholder={product.originalPrice ? String(product.originalPrice) : "optional"}
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {product.originalPrice ? `default ₹${product.originalPrice}` : "leave blank to hide"}
+              </p>
+            </div>
+          </div>
 
           <div className="mt-auto flex flex-wrap gap-3 pt-8">
             <Button
               onClick={handleSave}
-              disabled={saving || name.trim().length === 0}
+              disabled={saving || name.trim().length === 0 || !priceValid || !origValid}
               className="rounded-none"
             >
               {saving ? "Saving..." : "Save"}
@@ -337,7 +398,7 @@ function EditNameModal({
               disabled={saving}
               className="rounded-none"
             >
-              Reset to default
+              Reset to defaults
             </Button>
             <Button
               variant="ghost"
@@ -353,3 +414,4 @@ function EditNameModal({
     </div>
   );
 }
+
