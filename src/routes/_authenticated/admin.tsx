@@ -198,6 +198,13 @@ function AdminPage() {
                       >
                         Edit name
                       </Button>
+                      <Button
+                        variant="outline"
+                        className="rounded-none"
+                        onClick={() => setChaptersFor(p)}
+                      >
+                        Chapters
+                      </Button>
                       <div className="flex w-full max-w-xs gap-2">
                         <Input
                           type="url"
