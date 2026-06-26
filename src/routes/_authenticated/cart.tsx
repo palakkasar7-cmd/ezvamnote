@@ -113,15 +113,14 @@ function CartPage() {
                   <span className="text-xs uppercase tracking-widest">Total</span>
                   <span className="font-display text-3xl font-medium">₹{subtotal}</span>
                 </div>
-                <button
-                  disabled
-                  className="mt-6 w-full cursor-not-allowed border border-foreground bg-foreground px-6 py-4 text-sm uppercase tracking-widest text-background opacity-90"
-                  title="Checkout coming soon"
+                <Link
+                  to="/checkout"
+                  className="mt-6 block w-full border border-foreground bg-foreground px-6 py-4 text-center text-sm uppercase tracking-widest text-background transition hover:bg-background hover:text-foreground"
                 >
                   Checkout →
-                </button>
+                </Link>
                 <p className="mt-3 text-center text-xs text-muted-foreground">
-                  Secure checkout is being set up. Coming soon.
+                  Pay via UPI QR · approved within minutes.
                 </p>
               </div>
             </aside>

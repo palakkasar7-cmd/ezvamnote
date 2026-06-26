@@ -47,6 +47,48 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          items: Json
+          note: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          items: Json
+          note?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          items?: Json
+          note?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       phone_otps: {
         Row: {
           attempts: number
@@ -167,6 +209,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      order_status: "pending" | "approved" | "rejected" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -295,6 +338,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      order_status: ["pending", "approved", "rejected", "expired"],
     },
   },
 } as const
