@@ -37,12 +37,14 @@ type FileRow = {
   slug: string;
   file_name: string;
   size_bytes: number;
+  storage_path: string;
   updated_at: string;
 };
 
 function AdminPage() {
   const [files, setFiles] = useState<Record<string, FileRow>>({});
-  const [uploading, setUploading] = useState<string | null>(null);
+  const [savingUrl, setSavingUrl] = useState<string | null>(null);
+  const [urlDrafts, setUrlDrafts] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Product | null>(null);
 
   const load = async () => {
@@ -59,48 +61,43 @@ function AdminPage() {
     load();
   }, []);
 
-  const handleUpload = async (slug: string, file: File) => {
-    if (file.type !== "application/pdf") {
-      toast.error("Only PDF files allowed");
+  const handleSaveUrl = async (slug: string) => {
+    const url = (urlDrafts[slug] ?? "").trim();
+    if (!url) {
+      toast.error("Enter a PDF link");
       return;
     }
-    setUploading(slug);
     try {
-      const path = `${slug}.pdf`;
-      const { error: upErr } = await supabase.storage
-        .from("notes")
-        .upload(path, file, { upsert: true, contentType: "application/pdf" });
-      if (upErr) throw upErr;
-
+      new URL(url);
+    } catch {
+      toast.error("Enter a valid URL (https://…)");
+      return;
+    }
+    setSavingUrl(slug);
+    try {
       const { data: userData } = await supabase.auth.getUser();
+      const fileName = url.split("/").pop()?.split("?")[0] || "link.pdf";
       const { error: dbErr } = await supabase.from("note_files").upsert({
         slug,
-        storage_path: path,
-        file_name: file.name,
-        size_bytes: file.size,
+        storage_path: url,
+        file_name: fileName,
+        size_bytes: 0,
         uploaded_by: userData.user!.id,
         updated_at: new Date().toISOString(),
       });
       if (dbErr) throw dbErr;
-
-      toast.success(`Uploaded ${file.name}`);
+      toast.success("PDF link saved");
+      setUrlDrafts((d) => ({ ...d, [slug]: "" }));
       load();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      toast.error(err instanceof Error ? err.message : "Save failed");
     } finally {
-      setUploading(null);
+      setSavingUrl(null);
     }
   };
 
-  const handlePreview = async (slug: string) => {
-    const { data, error } = await supabase.storage
-      .from("notes")
-      .createSignedUrl(`${slug}.pdf`, 60);
-    if (error || !data) {
-      toast.error("Could not generate preview link");
-      return;
-    }
-    window.open(data.signedUrl, "_blank");
+  const handlePreview = (row: FileRow) => {
+    window.open(row.storage_path, "_blank");
   };
 
   return (
@@ -115,7 +112,7 @@ function AdminPage() {
         Admin · Manage Notes
       </h1>
       <p className="hand mt-2 text-muted-foreground">
-        Upload PDFs and edit the name shown on each notebook cover.
+        Paste a PDF link for each note and edit the name shown on the cover.
       </p>
 
       <div className="mt-10 border border-foreground">
@@ -125,7 +122,7 @@ function AdminPage() {
               <th className="p-3">Product</th>
               <th className="p-3">Cover name</th>
               <th className="p-3">Price</th>
-              <th className="p-3">Current file</th>
+              <th className="p-3">PDF link</th>
               <th className="p-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -171,19 +168,23 @@ function AdminPage() {
                   <td className="p-3 align-top">
                     {existing ? (
                       <div>
-                        <div>{existing.file_name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {(existing.size_bytes / 1024 / 1024).toFixed(2)} MB
-                        </div>
-                        <button
-                          onClick={() => handlePreview(p.slug)}
-                          className="mt-1 text-xs underline underline-offset-2"
+                        <a
+                          href={existing.storage_path}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="break-all text-xs underline underline-offset-2"
                         >
-                          Preview PDF
+                          {existing.storage_path}
+                        </a>
+                        <button
+                          onClick={() => handlePreview(existing)}
+                          className="mt-1 block text-xs underline underline-offset-2"
+                        >
+                          Open link
                         </button>
                       </div>
                     ) : (
-                      <span className="text-muted-foreground">— not uploaded —</span>
+                      <span className="text-muted-foreground">— no link —</span>
                     )}
                   </td>
                   <td className="p-3 align-top text-right">
@@ -195,35 +196,33 @@ function AdminPage() {
                       >
                         Edit name
                       </Button>
-                      <label className="inline-block">
+                      <div className="flex w-full max-w-xs gap-2">
                         <Input
-                          type="file"
-                          accept="application/pdf"
-                          disabled={uploading === p.slug}
-                          onChange={(e) => {
-                            const f = e.target.files?.[0];
-                            if (f) handleUpload(p.slug, f);
-                            e.target.value = "";
-                          }}
-                          className="hidden"
+                          type="url"
+                          placeholder="https://…/notes.pdf"
+                          value={urlDrafts[p.slug] ?? ""}
+                          onChange={(e) =>
+                            setUrlDrafts((d) => ({ ...d, [p.slug]: e.target.value }))
+                          }
+                          disabled={savingUrl === p.slug}
+                          className="rounded-none"
                         />
                         <Button
-                          asChild
-                          disabled={uploading === p.slug}
+                          onClick={() => handleSaveUrl(p.slug)}
+                          disabled={savingUrl === p.slug}
                           variant="outline"
                           className="rounded-none"
                         >
-                          <span>
-                            {uploading === p.slug
-                              ? "Uploading..."
-                              : existing
-                                ? "Replace PDF"
-                                : "Upload PDF"}
-                          </span>
+                          {savingUrl === p.slug
+                            ? "Saving..."
+                            : existing
+                              ? "Update"
+                              : "Save"}
                         </Button>
-                      </label>
+                      </div>
                     </div>
                   </td>
+
                 </tr>
               );
             })}
