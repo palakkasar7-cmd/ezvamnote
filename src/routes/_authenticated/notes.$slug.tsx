@@ -53,7 +53,17 @@ function ProductPage() {
     originalPrice: product.originalPrice,
   });
   const [added, setAdded] = useState(false);
+  const [chapters, setChapters] = useState<Array<{ id: string; chapter_number: number; title: string; pdf_url: string }>>([]);
   const related = PRODUCTS.filter((p) => p.subject === product.subject && p.slug !== product.slug).slice(0, 3);
+
+  useEffect(() => {
+    supabase
+      .from("note_chapters" as any)
+      .select("id,chapter_number,title,pdf_url")
+      .eq("slug", product.slug)
+      .order("chapter_number", { ascending: true })
+      .then(({ data }) => setChapters((data as any) ?? []));
+  }, [product.slug]);
 
 
   const handleAdd = () => {
