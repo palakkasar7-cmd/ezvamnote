@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
+import { Price } from "@/components/Price";
 import { PRODUCTS } from "@/lib/products";
+
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
