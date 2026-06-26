@@ -1,10 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { z } from "zod";
+import { toast } from "sonner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
 import { Price } from "@/components/Price";
-import { PRODUCTS, SUBJECTS, NOTE_TYPES, type Subject, type NoteType } from "@/lib/products";
+import { Button } from "@/components/ui/button";
+import { ProductQuickView } from "@/components/ProductQuickView";
+import { addToCart } from "@/lib/cart";
+import { PRODUCTS, SUBJECTS, NOTE_TYPES, type Subject, type NoteType, type Product } from "@/lib/products";
+
 
 
 const searchSchema = z.object({
@@ -28,10 +34,12 @@ export const Route = createFileRoute("/_authenticated/notes")({
 function NotesPage() {
   const { subject, type } = Route.useSearch();
   const navigate = Route.useNavigate();
+  const [quickView, setQuickView] = useState<Product | null>(null);
 
   const filtered = PRODUCTS.filter(
     (p) => (!subject || p.subject === subject) && (!type || p.type === type),
   );
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -112,17 +120,28 @@ function NotesPage() {
         ) : (
           <div className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((p) => (
-              <Link key={p.slug} to="/notes/$slug" params={{ slug: p.slug }} className="group block">
-                <NotebookCover product={p} />
-                <div className="mt-5">
+              <div key={p.slug} className="group flex flex-col">
+                <button
+                  type="button"
+                  onClick={() => setQuickView(p)}
+                  className="block text-left"
+                  aria-label={`View details for ${p.title}`}
+                >
+                  <NotebookCover product={p} />
+                </button>
+                <div className="mt-5 flex flex-1 flex-col">
                   <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground">
                     <span>{p.subject}</span>
                     <span>·</span>
                     <span>{p.type}</span>
                   </div>
-                  <div className="mt-2 font-display text-xl font-semibold leading-tight group-hover:underline underline-offset-4">
+                  <Link
+                    to="/notes/$slug"
+                    params={{ slug: p.slug }}
+                    className="mt-2 font-display text-xl font-semibold leading-tight hover:underline underline-offset-4"
+                  >
                     {p.title}
-                  </div>
+                  </Link>
                   <div className="mt-1 text-sm text-muted-foreground">{p.author}</div>
                   <div className="mt-3 flex items-baseline gap-2">
                     <Price
@@ -134,18 +153,40 @@ function NotesPage() {
                     />
                     <span className="ml-auto text-xs text-muted-foreground">★ {p.rating} · {p.reviews}</span>
                   </div>
-
+                  <div className="mt-4 flex gap-2">
+                    <Button
+                      onClick={() => {
+                        addToCart(p.slug, 1);
+                        toast.success("Added to cart");
+                      }}
+                      className="flex-1 rounded-none"
+                    >
+                      Buy now
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setQuickView(p)}
+                      className="rounded-none"
+                    >
+                      Details
+                    </Button>
+                  </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}
       </section>
 
+      {quickView && (
+        <ProductQuickView product={quickView} onClose={() => setQuickView(null)} />
+      )}
+
       <SiteFooter />
     </div>
   );
 }
+
 
 function FilterChip({
   active,
