@@ -37,12 +37,14 @@ type FileRow = {
   slug: string;
   file_name: string;
   size_bytes: number;
+  storage_path: string;
   updated_at: string;
 };
 
 function AdminPage() {
   const [files, setFiles] = useState<Record<string, FileRow>>({});
-  const [uploading, setUploading] = useState<string | null>(null);
+  const [savingUrl, setSavingUrl] = useState<string | null>(null);
+  const [urlDrafts, setUrlDrafts] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Product | null>(null);
 
   const load = async () => {
@@ -59,48 +61,43 @@ function AdminPage() {
     load();
   }, []);
 
-  const handleUpload = async (slug: string, file: File) => {
-    if (file.type !== "application/pdf") {
-      toast.error("Only PDF files allowed");
+  const handleSaveUrl = async (slug: string) => {
+    const url = (urlDrafts[slug] ?? "").trim();
+    if (!url) {
+      toast.error("Enter a PDF link");
       return;
     }
-    setUploading(slug);
     try {
-      const path = `${slug}.pdf`;
-      const { error: upErr } = await supabase.storage
-        .from("notes")
-        .upload(path, file, { upsert: true, contentType: "application/pdf" });
-      if (upErr) throw upErr;
-
+      new URL(url);
+    } catch {
+      toast.error("Enter a valid URL (https://…)");
+      return;
+    }
+    setSavingUrl(slug);
+    try {
       const { data: userData } = await supabase.auth.getUser();
+      const fileName = url.split("/").pop()?.split("?")[0] || "link.pdf";
       const { error: dbErr } = await supabase.from("note_files").upsert({
         slug,
-        storage_path: path,
-        file_name: file.name,
-        size_bytes: file.size,
+        storage_path: url,
+        file_name: fileName,
+        size_bytes: 0,
         uploaded_by: userData.user!.id,
         updated_at: new Date().toISOString(),
       });
       if (dbErr) throw dbErr;
-
-      toast.success(`Uploaded ${file.name}`);
+      toast.success("PDF link saved");
+      setUrlDrafts((d) => ({ ...d, [slug]: "" }));
       load();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      toast.error(err instanceof Error ? err.message : "Save failed");
     } finally {
-      setUploading(null);
+      setSavingUrl(null);
     }
   };
 
-  const handlePreview = async (slug: string) => {
-    const { data, error } = await supabase.storage
-      .from("notes")
-      .createSignedUrl(`${slug}.pdf`, 60);
-    if (error || !data) {
-      toast.error("Could not generate preview link");
-      return;
-    }
-    window.open(data.signedUrl, "_blank");
+  const handlePreview = (row: FileRow) => {
+    window.open(row.storage_path, "_blank");
   };
 
   return (
