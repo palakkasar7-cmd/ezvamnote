@@ -49,7 +49,7 @@ function NotesPage() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-6 py-6">
           <FilterChip
             active={!subject}
-            onClick={() => navigate({ search: (s) => ({ ...s, subject: undefined }) })}
+            onClick={() => navigate({ search: (s: typeof Route.types.searchSchema) => ({ ...s, subject: undefined }) })}
           >
             All subjects
           </FilterChip>
@@ -57,7 +57,14 @@ function NotesPage() {
             <FilterChip
               key={s}
               active={subject === s}
-              onClick={() => navigate({ search: (cur) => ({ ...cur, subject: cur.subject === s ? undefined : (s as Subject) }) })}
+              onClick={() =>
+                navigate({
+                  search: (cur: typeof Route.types.searchSchema) => ({
+                    ...cur,
+                    subject: cur.subject === s ? undefined : (s as Subject),
+                  }),
+                })
+              }
             >
               {s}
             </FilterChip>
@@ -65,7 +72,7 @@ function NotesPage() {
           <div className="mx-3 hidden h-5 w-px bg-foreground/30 md:block" />
           <FilterChip
             active={!type}
-            onClick={() => navigate({ search: (s) => ({ ...s, type: undefined }) })}
+            onClick={() => navigate({ search: (s: typeof Route.types.searchSchema) => ({ ...s, type: undefined }) })}
           >
             Any type
           </FilterChip>
@@ -73,11 +80,19 @@ function NotesPage() {
             <FilterChip
               key={t}
               active={type === t}
-              onClick={() => navigate({ search: (cur) => ({ ...cur, type: cur.type === t ? undefined : (t as NoteType) }) })}
+              onClick={() =>
+                navigate({
+                  search: (cur: typeof Route.types.searchSchema) => ({
+                    ...cur,
+                    type: cur.type === t ? undefined : (t as NoteType),
+                  }),
+                })
+              }
             >
               {t}
             </FilterChip>
           ))}
+
         </div>
       </section>
 

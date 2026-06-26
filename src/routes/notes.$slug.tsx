@@ -121,7 +121,7 @@ function ProductPage() {
             </div>
 
             <div className="mt-12 grid gap-6 border-t border-foreground pt-10 sm:grid-cols-2">
-              {product.highlights.map((h, i) => (
+              {product.highlights.map((h: string, i: number) => (
                 <div key={i} className="flex gap-3">
                   <span className="font-display text-2xl leading-none">·</span>
                   <span className="text-sm leading-relaxed">{h}</span>
@@ -132,7 +132,7 @@ function ProductPage() {
             <div className="mt-14">
               <h2 className="font-display text-2xl font-medium">What&rsquo;s inside</h2>
               <ol className="mt-6 grid gap-2 sm:grid-cols-2">
-                {product.chapters.map((c, i) => (
+                {product.chapters.map((c: string, i: number) => (
                   <li key={i} className="flex gap-3 border-b border-foreground/15 py-2 text-sm">
                     <span className="w-6 text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
                     <span>{c}</span>
@@ -140,6 +140,7 @@ function ProductPage() {
                 ))}
               </ol>
             </div>
+
           </div>
         </div>
       </section>
