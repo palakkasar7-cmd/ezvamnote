@@ -9,6 +9,8 @@ const searchSchema = z.object({
   subject: z.enum(["Physics", "Chemistry", "Mathematics", "Biology"]).optional(),
   type: z.enum(["Full Subject", "Chapter-wise", "PYQ Solved", "Formula Booklet"]).optional(),
 });
+type Search = z.infer<typeof searchSchema>;
+
 
 export const Route = createFileRoute("/notes")({
   validateSearch: (s) => searchSchema.parse(s),
