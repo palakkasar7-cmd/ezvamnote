@@ -1,10 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { z } from "zod";
+import { toast } from "sonner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
 import { Price } from "@/components/Price";
-import { PRODUCTS, SUBJECTS, NOTE_TYPES, type Subject, type NoteType } from "@/lib/products";
+import { Button } from "@/components/ui/button";
+import { ProductQuickView } from "@/components/ProductQuickView";
+import { addToCart } from "@/lib/cart";
+import { PRODUCTS, SUBJECTS, NOTE_TYPES, type Subject, type NoteType, type Product } from "@/lib/products";
+
 
 
 const searchSchema = z.object({
