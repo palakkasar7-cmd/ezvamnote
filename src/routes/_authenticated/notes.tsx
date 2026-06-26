@@ -157,12 +157,14 @@ function NotesPage() {
                     <Button
                       onClick={() => {
                         addToCart(p.slug, 1);
-                        toast.success("Added to cart");
+                        toast.success("Heading to checkout", { description: p.title });
+                        navigate({ to: "/cart" });
                       }}
                       className="flex-1 rounded-none"
                     >
                       Buy now
                     </Button>
+
                     <Button
                       variant="outline"
                       onClick={() => setQuickView(p)}
