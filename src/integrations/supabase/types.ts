@@ -80,18 +80,24 @@ export type Database = {
       product_overrides: {
         Row: {
           cover_name: string | null
+          original_price: number | null
+          price: number | null
           slug: string
           updated_at: string
           updated_by: string | null
         }
         Insert: {
           cover_name?: string | null
+          original_price?: number | null
+          price?: number | null
           slug: string
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
           cover_name?: string | null
+          original_price?: number | null
+          price?: number | null
           slug?: string
           updated_at?: string
           updated_by?: string | null

@@ -1,0 +1,1 @@
+ALTER TABLE public.product_overrides ADD COLUMN IF NOT EXISTS price integer, ADD COLUMN IF NOT EXISTS original_price integer;
