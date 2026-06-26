@@ -173,6 +173,7 @@ function LibraryPage() {
                     <th className="p-3">Items</th>
                     <th className="p-3">Amount</th>
                     <th className="p-3">Order</th>
+                    <th className="p-3">Receipt</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -191,6 +192,15 @@ function LibraryPage() {
                       <td className="p-3 font-medium">₹{o.amount}</td>
                       <td className="p-3 text-xs text-muted-foreground">
                         #{o.id.slice(0, 8)}
+                      </td>
+                      <td className="p-3 text-xs">
+                        <Link
+                          to="/receipt/$orderId"
+                          params={{ orderId: o.id }}
+                          className="underline underline-offset-4"
+                        >
+                          View
+                        </Link>
                       </td>
                     </tr>
                   ))}
