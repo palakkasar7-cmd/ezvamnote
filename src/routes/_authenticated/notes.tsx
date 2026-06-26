@@ -123,12 +123,16 @@ function NotesPage() {
                   </div>
                   <div className="mt-1 text-sm text-muted-foreground">{p.author}</div>
                   <div className="mt-3 flex items-baseline gap-2">
-                    <span className="font-display text-2xl font-medium">₹{p.price}</span>
-                    {p.originalPrice && (
-                      <span className="text-sm text-muted-foreground line-through">₹{p.originalPrice}</span>
-                    )}
+                    <Price
+                      slug={p.slug}
+                      price={p.price}
+                      originalPrice={p.originalPrice}
+                      className="font-display text-2xl font-medium"
+                      strikeClassName="text-sm text-muted-foreground line-through ml-2"
+                    />
                     <span className="ml-auto text-xs text-muted-foreground">★ {p.rating} · {p.reviews}</span>
                   </div>
+
                 </div>
               </Link>
             ))}
