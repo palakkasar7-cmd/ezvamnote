@@ -77,14 +77,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "NoteVault — Handwritten Std 12 & MHT-CET Notes" },
+      { name: "description", content: "Topper-handwritten notes for Maharashtra Std 12 & MHT-CET. Physics, Chemistry, Mathematics, Biology. Delivered instantly as PDF." },
+      { property: "og:title", content: "NoteVault — Handwritten Std 12 & MHT-CET Notes" },
+      { property: "og:description", content: "Topper-handwritten notes. Every chapter. Every derivation. One notebook." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       {
