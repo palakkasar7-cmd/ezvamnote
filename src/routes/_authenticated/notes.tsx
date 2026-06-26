@@ -3,7 +3,9 @@ import { z } from "zod";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
+import { Price } from "@/components/Price";
 import { PRODUCTS, SUBJECTS, NOTE_TYPES, type Subject, type NoteType } from "@/lib/products";
+
 
 const searchSchema = z.object({
   subject: z.enum(["Physics", "Chemistry", "Mathematics", "Biology"]).optional(),
