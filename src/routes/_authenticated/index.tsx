@@ -1,9 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
 import { Price } from "@/components/Price";
-import { PRODUCTS } from "@/lib/products";
+import { Button } from "@/components/ui/button";
+import { ProductQuickView } from "@/components/ProductQuickView";
+import { addToCart } from "@/lib/cart";
+import { PRODUCTS, type Product } from "@/lib/products";
+
 
 
 export const Route = createFileRoute("/_authenticated/")({
