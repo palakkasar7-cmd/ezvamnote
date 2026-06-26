@@ -1,5 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PRODUCTS, type Product } from "@/lib/products";
 import { Button } from "@/components/ui/button";
@@ -100,7 +101,13 @@ function AdminPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
-      <h1 className="font-display text-4xl font-semibold tracking-tight">
+      <Link
+        to="/"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+      >
+        <ArrowLeft className="h-4 w-4" /> Back to home
+      </Link>
+      <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight">
         Admin · Manage Notes
       </h1>
       <p className="hand mt-2 text-muted-foreground">
