@@ -103,8 +103,9 @@ function HomePage() {
                   <div className="text-xs uppercase tracking-widest text-muted-foreground">{p.type}</div>
                   <div className="mt-1 font-display text-lg font-semibold">{p.subject}</div>
                   <div className="mt-1 text-sm text-muted-foreground">
-                    ₹{p.price} <span className="line-through opacity-50">₹{p.originalPrice}</span>
+                    <Price slug={p.slug} price={p.price} originalPrice={p.originalPrice} />
                   </div>
+
                 </div>
               </Link>
             ))}
