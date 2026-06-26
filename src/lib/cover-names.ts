@@ -75,19 +75,23 @@ export function useCoverName(slug: string): string | undefined {
   );
 }
 
-export function usePrice(slug: string): { price?: number; originalPrice?: number } {
+export function usePriceKey(slug: string): string {
   return useSyncExternalStore(
     subscribeOverrides,
     () => {
       const o = overrides[slug];
-      return JSON.stringify({ p: o?.price, op: o?.original_price });
+      return `${o?.price ?? ""}|${o?.original_price ?? ""}`;
     },
-    () => JSON.stringify({}),
-  ) as unknown as { price?: number; originalPrice?: number } extends never
-    ? never
-    : { price?: number; originalPrice?: number } & string
-    ? never
-    : { price?: number; originalPrice?: number } as any;
+    () => "|",
+  );
+}
+
+export function usePrice(slug: string, fallback: { price: number; originalPrice?: number }) {
+  usePriceKey(slug);
+  return {
+    price: getPriceSnapshot(slug) ?? fallback.price,
+    originalPrice: getOriginalPriceSnapshot(slug) ?? fallback.originalPrice,
+  };
 }
 
 export async function refreshCoverNames() {
