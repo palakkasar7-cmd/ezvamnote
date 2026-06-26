@@ -124,6 +124,7 @@ function AdminPage() {
             <tr className="text-left">
               <th className="p-3">Product</th>
               <th className="p-3">Cover name</th>
+              <th className="p-3">Price</th>
               <th className="p-3">Current file</th>
               <th className="p-3 text-right">Actions</th>
             </tr>
@@ -132,6 +133,11 @@ function AdminPage() {
             {PRODUCTS.map((p) => {
               const existing = files[p.slug];
               const override = getCoverNameSnapshot(p.slug);
+              const priceOv = getPriceSnapshot(p.slug);
+              const origOv = getOriginalPriceSnapshot(p.slug);
+              const effPrice = priceOv ?? p.price;
+              const effOrig = origOv ?? p.originalPrice;
+              const priceChanged = priceOv != null || origOv != null;
               return (
                 <tr key={p.slug} className="border-b border-foreground/20">
                   <td className="p-3 align-top">
@@ -148,6 +154,20 @@ function AdminPage() {
                       </div>
                     )}
                   </td>
+                  <td className="p-3 align-top">
+                    <div className="font-medium">
+                      ₹{effPrice}
+                      {effOrig && effOrig > effPrice && (
+                        <span className="ml-2 text-xs text-muted-foreground line-through">₹{effOrig}</span>
+                      )}
+                    </div>
+                    {priceChanged && (
+                      <div className="text-xs text-muted-foreground">
+                        default: ₹{p.price}{p.originalPrice ? ` / ₹${p.originalPrice}` : ""}
+                      </div>
+                    )}
+                  </td>
+
                   <td className="p-3 align-top">
                     {existing ? (
                       <div>
