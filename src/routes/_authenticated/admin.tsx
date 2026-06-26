@@ -6,7 +6,6 @@ import { PRODUCTS, type Product } from "@/lib/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NotebookCover } from "@/components/NotebookCover";
-import { ChaptersManager } from "@/components/ChaptersManager";
 import {
   refreshCoverNames,
   saveCoverName,
@@ -47,7 +46,6 @@ function AdminPage() {
   const [savingUrl, setSavingUrl] = useState<string | null>(null);
   const [urlDrafts, setUrlDrafts] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Product | null>(null);
-  const [chaptersFor, setChaptersFor] = useState<Product | null>(null);
 
   const load = async () => {
     const [{ data: fileData }] = await Promise.all([
@@ -198,13 +196,6 @@ function AdminPage() {
                       >
                         Edit name
                       </Button>
-                      <Button
-                        variant="outline"
-                        className="rounded-none"
-                        onClick={() => setChaptersFor(p)}
-                      >
-                        Chapters
-                      </Button>
                       <div className="flex w-full max-w-xs gap-2">
                         <Input
                           type="url"
@@ -249,136 +240,6 @@ function AdminPage() {
           }}
         />
       )}
-
-      {chaptersFor && (
-        <ChaptersManager
-          product={chaptersFor}
-          onClose={() => setChaptersFor(null)}
-        />
-      )}
-
-      <OrdersPanel />
-    </div>
-  );
-}
-
-type OrderRow = {
-  id: string;
-  user_id: string;
-  amount: number;
-  items: Array<{ slug: string; title: string; qty: number; price: number }>;
-  status: "pending" | "approved" | "rejected" | "expired";
-  expires_at: string;
-  created_at: string;
-  note: string | null;
-};
-
-function OrdersPanel() {
-  const [orders, setOrders] = useState<OrderRow[]>([]);
-  const [busy, setBusy] = useState<string | null>(null);
-
-  const load = async () => {
-    const { data } = await supabase
-      .from("orders")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(50);
-    setOrders((data as any) ?? []);
-  };
-  useEffect(() => {
-    load();
-    const t = setInterval(load, 5000);
-    return () => clearInterval(t);
-  }, []);
-
-  const act = async (id: string, status: "approved" | "rejected", note?: string) => {
-    setBusy(id);
-    try {
-      const patch: any = { status };
-      if (status === "approved") patch.approved_at = new Date().toISOString();
-      if (note) patch.note = note;
-      const { error } = await supabase.from("orders").update(patch).eq("id", id);
-      if (error) throw error;
-      toast.success(`Order ${status}`);
-      load();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Update failed");
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  return (
-    <div className="mt-16">
-      <h2 className="font-display text-3xl font-semibold">Orders</h2>
-      <p className="hand mt-1 text-muted-foreground">Approve UPI payments here.</p>
-      <div className="mt-6 border border-foreground">
-        <table className="w-full text-sm">
-          <thead className="border-b border-foreground bg-foreground/5 text-left">
-            <tr>
-              <th className="p-3">When</th>
-              <th className="p-3">Items</th>
-              <th className="p-3">Amount</th>
-              <th className="p-3">Status</th>
-              <th className="p-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.length === 0 && (
-              <tr><td colSpan={5} className="p-6 text-center text-muted-foreground">No orders yet</td></tr>
-            )}
-            {orders.map((o) => {
-              const expired = o.status === "pending" && new Date(o.expires_at).getTime() < Date.now();
-              const effStatus = expired ? "expired" : o.status;
-              return (
-                <tr key={o.id} className="border-b border-foreground/20 align-top">
-                  <td className="p-3 text-xs">
-                    {new Date(o.created_at).toLocaleString()}
-                    <div className="text-muted-foreground">#{o.id.slice(0,8)}</div>
-                  </td>
-                  <td className="p-3 text-xs">
-                    {o.items?.map((it, i) => (
-                      <div key={i}>{it.qty}× {it.title}</div>
-                    ))}
-                    <div className="mt-1 text-muted-foreground">user {o.user_id.slice(0,8)}</div>
-                  </td>
-                  <td className="p-3 font-medium">₹{o.amount}</td>
-                  <td className="p-3 capitalize">{effStatus}</td>
-                  <td className="p-3 text-right">
-                    {o.status === "pending" && !expired ? (
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="rounded-none"
-                          disabled={busy === o.id}
-                          onClick={() => act(o.id, "approved")}
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="rounded-none"
-                          disabled={busy === o.id}
-                          onClick={() => {
-                            const reason = window.prompt("Reason for rejection?") ?? "";
-                            act(o.id, "rejected", reason);
-                          }}
-                        >
-                          Reject
-                        </Button>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }

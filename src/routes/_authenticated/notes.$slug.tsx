@@ -6,8 +6,7 @@ import { PRODUCTS, findProduct } from "@/lib/products";
 import { addToCart } from "@/lib/cart";
 import { usePrice } from "@/lib/cover-names";
 import { Price } from "@/components/Price";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
 
 
@@ -53,17 +52,7 @@ function ProductPage() {
     originalPrice: product.originalPrice,
   });
   const [added, setAdded] = useState(false);
-  const [chapters, setChapters] = useState<Array<{ id: string; chapter_number: number; title: string; pdf_url: string }>>([]);
   const related = PRODUCTS.filter((p) => p.subject === product.subject && p.slug !== product.slug).slice(0, 3);
-
-  useEffect(() => {
-    supabase
-      .from("note_chapters" as any)
-      .select("id,chapter_number,title,pdf_url")
-      .eq("slug", product.slug)
-      .order("chapter_number", { ascending: true })
-      .then(({ data }) => setChapters((data as any) ?? []));
-  }, [product.slug]);
 
 
   const handleAdd = () => {
@@ -151,36 +140,15 @@ function ProductPage() {
             </div>
 
             <div className="mt-14">
-              <h2 className="font-display text-2xl font-medium">Chapters</h2>
-              {chapters.length === 0 ? (
-                <ol className="mt-6 grid gap-2 sm:grid-cols-2">
-                  {product.chapters.map((c: string, i: number) => (
-                    <li key={i} className="flex gap-3 border-b border-foreground/15 py-2 text-sm">
-                      <span className="w-6 text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
-                      <span>{c}</span>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <ol className="mt-6 grid gap-2">
-                  {chapters.map((c) => (
-                    <li key={c.id} className="flex items-center justify-between gap-4 border-b border-foreground/15 py-3 text-sm">
-                      <div className="flex gap-3">
-                        <span className="w-8 text-muted-foreground">{String(c.chapter_number).padStart(2, "0")}</span>
-                        <span>{c.title}</span>
-                      </div>
-                      <a
-                        href={c.pdf_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="border border-foreground px-3 py-1 text-xs uppercase tracking-widest hover:bg-foreground hover:text-background"
-                      >
-                        Open PDF
-                      </a>
-                    </li>
-                  ))}
-                </ol>
-              )}
+              <h2 className="font-display text-2xl font-medium">What&rsquo;s inside</h2>
+              <ol className="mt-6 grid gap-2 sm:grid-cols-2">
+                {product.chapters.map((c: string, i: number) => (
+                  <li key={i} className="flex gap-3 border-b border-foreground/15 py-2 text-sm">
+                    <span className="w-6 text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+                    <span>{c}</span>
+                  </li>
+                ))}
+              </ol>
             </div>
 
           </div>

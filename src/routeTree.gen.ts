@@ -13,11 +13,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedNotesRouteImport } from './routes/_authenticated/notes'
-import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
-import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AuthenticatedCartRouteImport } from './routes/_authenticated/cart'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedReceiptOrderIdRouteImport } from './routes/_authenticated/receipt.$orderId'
 import { Route as AuthenticatedNotesSlugRouteImport } from './routes/_authenticated/notes.$slug'
 
 const AuthRoute = AuthRouteImport.update({
@@ -39,16 +36,6 @@ const AuthenticatedNotesRoute = AuthenticatedNotesRouteImport.update({
   path: '/notes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
-  id: '/library',
-  path: '/library',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedCheckoutRoute = AuthenticatedCheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedCartRoute = AuthenticatedCartRouteImport.update({
   id: '/cart',
   path: '/cart',
@@ -59,12 +46,6 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedReceiptOrderIdRoute =
-  AuthenticatedReceiptOrderIdRouteImport.update({
-    id: '/receipt/$orderId',
-    path: '/receipt/$orderId',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedNotesSlugRoute = AuthenticatedNotesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -76,22 +57,16 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/cart': typeof AuthenticatedCartRoute
-  '/checkout': typeof AuthenticatedCheckoutRoute
-  '/library': typeof AuthenticatedLibraryRoute
   '/notes': typeof AuthenticatedNotesRouteWithChildren
   '/notes/$slug': typeof AuthenticatedNotesSlugRoute
-  '/receipt/$orderId': typeof AuthenticatedReceiptOrderIdRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/cart': typeof AuthenticatedCartRoute
-  '/checkout': typeof AuthenticatedCheckoutRoute
-  '/library': typeof AuthenticatedLibraryRoute
   '/notes': typeof AuthenticatedNotesRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
   '/notes/$slug': typeof AuthenticatedNotesSlugRoute
-  '/receipt/$orderId': typeof AuthenticatedReceiptOrderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,48 +74,24 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/cart': typeof AuthenticatedCartRoute
-  '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
-  '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/notes': typeof AuthenticatedNotesRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/notes/$slug': typeof AuthenticatedNotesSlugRoute
-  '/_authenticated/receipt/$orderId': typeof AuthenticatedReceiptOrderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/auth'
-    | '/admin'
-    | '/cart'
-    | '/checkout'
-    | '/library'
-    | '/notes'
-    | '/notes/$slug'
-    | '/receipt/$orderId'
+  fullPaths: '/' | '/auth' | '/admin' | '/cart' | '/notes' | '/notes/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/auth'
-    | '/admin'
-    | '/cart'
-    | '/checkout'
-    | '/library'
-    | '/notes'
-    | '/'
-    | '/notes/$slug'
-    | '/receipt/$orderId'
+  to: '/auth' | '/admin' | '/cart' | '/notes' | '/' | '/notes/$slug'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/admin'
     | '/_authenticated/cart'
-    | '/_authenticated/checkout'
-    | '/_authenticated/library'
     | '/_authenticated/notes'
     | '/_authenticated/'
     | '/_authenticated/notes/$slug'
-    | '/_authenticated/receipt/$orderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -178,20 +129,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/library': {
-      id: '/_authenticated/library'
-      path: '/library'
-      fullPath: '/library'
-      preLoaderRoute: typeof AuthenticatedLibraryRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/checkout': {
-      id: '/_authenticated/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof AuthenticatedCheckoutRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/cart': {
       id: '/_authenticated/cart'
       path: '/cart'
@@ -204,13 +141,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/receipt/$orderId': {
-      id: '/_authenticated/receipt/$orderId'
-      path: '/receipt/$orderId'
-      fullPath: '/receipt/$orderId'
-      preLoaderRoute: typeof AuthenticatedReceiptOrderIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/notes/$slug': {
@@ -237,21 +167,15 @@ const AuthenticatedNotesRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCartRoute: typeof AuthenticatedCartRoute
-  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
-  AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedNotesRoute: typeof AuthenticatedNotesRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedReceiptOrderIdRoute: typeof AuthenticatedReceiptOrderIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCartRoute: AuthenticatedCartRoute,
-  AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
-  AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedNotesRoute: AuthenticatedNotesRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedReceiptOrderIdRoute: AuthenticatedReceiptOrderIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

@@ -14,39 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      note_chapters: {
-        Row: {
-          chapter_number: number
-          created_at: string
-          created_by: string | null
-          id: string
-          pdf_url: string
-          slug: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          chapter_number: number
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          pdf_url: string
-          slug: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          chapter_number?: number
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          pdf_url?: string
-          slug?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       note_files: {
         Row: {
           cover_name: string | null
@@ -77,48 +44,6 @@ export type Database = {
           storage_path?: string
           updated_at?: string
           uploaded_by?: string
-        }
-        Relationships: []
-      }
-      orders: {
-        Row: {
-          amount: number
-          approved_at: string | null
-          approved_by: string | null
-          created_at: string
-          expires_at: string
-          id: string
-          items: Json
-          note: string | null
-          status: Database["public"]["Enums"]["order_status"]
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          amount: number
-          approved_at?: string | null
-          approved_by?: string | null
-          created_at?: string
-          expires_at: string
-          id?: string
-          items: Json
-          note?: string | null
-          status?: Database["public"]["Enums"]["order_status"]
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          approved_at?: string | null
-          approved_by?: string | null
-          created_at?: string
-          expires_at?: string
-          id?: string
-          items?: Json
-          note?: string | null
-          status?: Database["public"]["Enums"]["order_status"]
-          updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -242,7 +167,6 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      order_status: "pending" | "approved" | "rejected" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -371,7 +295,6 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
-      order_status: ["pending", "approved", "rejected", "expired"],
     },
   },
 } as const
