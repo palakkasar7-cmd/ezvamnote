@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -6,6 +7,26 @@ import { toast } from "sonner";
 export function SiteHeader() {
   const { count } = useCart();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    const check = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userData.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (mounted) setIsAdmin(!!data);
+    };
+    check();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -25,6 +46,11 @@ export function SiteHeader() {
           <Link to="/notes" className="hover:underline underline-offset-4">All Notes</Link>
           <a href="/#why" className="hover:underline underline-offset-4">Why handwritten</a>
           <a href="/#faq" className="hover:underline underline-offset-4">FAQ</a>
+          {isAdmin && (
+            <Link to="/admin" className="font-medium hover:underline underline-offset-4">
+              Admin
+            </Link>
+          )}
         </nav>
         <div className="flex items-center gap-3">
           <Link

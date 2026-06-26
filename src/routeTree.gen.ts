@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedNotesRouteImport } from './routes/_authenticated/notes'
 import { Route as AuthenticatedCartRouteImport } from './routes/_authenticated/cart'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedNotesSlugRouteImport } from './routes/_authenticated/notes.$slug'
 
 const AuthRoute = AuthRouteImport.update({
@@ -40,6 +41,11 @@ const AuthenticatedCartRoute = AuthenticatedCartRouteImport.update({
   path: '/cart',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedNotesSlugRoute = AuthenticatedNotesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -49,12 +55,14 @@ const AuthenticatedNotesSlugRoute = AuthenticatedNotesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/cart': typeof AuthenticatedCartRoute
   '/notes': typeof AuthenticatedNotesRouteWithChildren
   '/notes/$slug': typeof AuthenticatedNotesSlugRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/cart': typeof AuthenticatedCartRoute
   '/notes': typeof AuthenticatedNotesRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
@@ -64,6 +72,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/cart': typeof AuthenticatedCartRoute
   '/_authenticated/notes': typeof AuthenticatedNotesRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -71,13 +80,14 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/cart' | '/notes' | '/notes/$slug'
+  fullPaths: '/' | '/auth' | '/admin' | '/cart' | '/notes' | '/notes/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/cart' | '/notes' | '/' | '/notes/$slug'
+  to: '/auth' | '/admin' | '/cart' | '/notes' | '/' | '/notes/$slug'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/admin'
     | '/_authenticated/cart'
     | '/_authenticated/notes'
     | '/_authenticated/'
@@ -126,6 +136,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCartRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/notes/$slug': {
       id: '/_authenticated/notes/$slug'
       path: '/$slug'
@@ -148,12 +165,14 @@ const AuthenticatedNotesRouteWithChildren =
   AuthenticatedNotesRoute._addFileChildren(AuthenticatedNotesRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCartRoute: typeof AuthenticatedCartRoute
   AuthenticatedNotesRoute: typeof AuthenticatedNotesRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCartRoute: AuthenticatedCartRoute,
   AuthenticatedNotesRoute: AuthenticatedNotesRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
