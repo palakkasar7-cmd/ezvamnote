@@ -100,24 +100,50 @@ function HomePage() {
           </div>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {featured.map((p) => (
-              <Link
-                key={p.slug}
-                to="/notes/$slug"
-                params={{ slug: p.slug }}
-                className="group block"
-              >
-                <NotebookCover product={p} />
-                <div className="mt-4">
+              <div key={p.slug} className="flex flex-col">
+                <button
+                  type="button"
+                  onClick={() => setQuickView(p)}
+                  className="block text-left"
+                  aria-label={`View details for ${p.title}`}
+                >
+                  <NotebookCover product={p} />
+                </button>
+                <div className="mt-4 flex flex-1 flex-col">
                   <div className="text-xs uppercase tracking-widest text-muted-foreground">{p.type}</div>
-                  <div className="mt-1 font-display text-lg font-semibold">{p.subject}</div>
+                  <Link
+                    to="/notes/$slug"
+                    params={{ slug: p.slug }}
+                    className="mt-1 font-display text-lg font-semibold hover:underline underline-offset-4"
+                  >
+                    {p.subject}
+                  </Link>
                   <div className="mt-1 text-sm text-muted-foreground">
                     <Price slug={p.slug} price={p.price} originalPrice={p.originalPrice} />
                   </div>
-
+                  <div className="mt-3 flex gap-2">
+                    <Button
+                      onClick={() => {
+                        addToCart(p.slug, 1);
+                        toast.success("Added to cart");
+                      }}
+                      className="flex-1 rounded-none"
+                    >
+                      Buy now
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setQuickView(p)}
+                      className="rounded-none"
+                    >
+                      Details
+                    </Button>
+                  </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
+
         </div>
       </section>
 
