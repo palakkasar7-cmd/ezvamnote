@@ -17,6 +17,7 @@ import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AuthenticatedCartRouteImport } from './routes/_authenticated/cart'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedReceiptOrderIdRouteImport } from './routes/_authenticated/receipt.$orderId'
 import { Route as AuthenticatedNotesSlugRouteImport } from './routes/_authenticated/notes.$slug'
 
 const AuthRoute = AuthRouteImport.update({
@@ -58,6 +59,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedReceiptOrderIdRoute =
+  AuthenticatedReceiptOrderIdRouteImport.update({
+    id: '/receipt/$orderId',
+    path: '/receipt/$orderId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedNotesSlugRoute = AuthenticatedNotesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/library': typeof AuthenticatedLibraryRoute
   '/notes': typeof AuthenticatedNotesRouteWithChildren
   '/notes/$slug': typeof AuthenticatedNotesSlugRoute
+  '/receipt/$orderId': typeof AuthenticatedReceiptOrderIdRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -83,6 +91,7 @@ export interface FileRoutesByTo {
   '/notes': typeof AuthenticatedNotesRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
   '/notes/$slug': typeof AuthenticatedNotesSlugRoute
+  '/receipt/$orderId': typeof AuthenticatedReceiptOrderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -95,6 +104,7 @@ export interface FileRoutesById {
   '/_authenticated/notes': typeof AuthenticatedNotesRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/notes/$slug': typeof AuthenticatedNotesSlugRoute
+  '/_authenticated/receipt/$orderId': typeof AuthenticatedReceiptOrderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/notes'
     | '/notes/$slug'
+    | '/receipt/$orderId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/notes'
     | '/'
     | '/notes/$slug'
+    | '/receipt/$orderId'
   id:
     | '__root__'
     | '/_authenticated'
@@ -128,6 +140,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notes'
     | '/_authenticated/'
     | '/_authenticated/notes/$slug'
+    | '/_authenticated/receipt/$orderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -193,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/receipt/$orderId': {
+      id: '/_authenticated/receipt/$orderId'
+      path: '/receipt/$orderId'
+      fullPath: '/receipt/$orderId'
+      preLoaderRoute: typeof AuthenticatedReceiptOrderIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/notes/$slug': {
       id: '/_authenticated/notes/$slug'
       path: '/$slug'
@@ -221,6 +241,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedNotesRoute: typeof AuthenticatedNotesRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedReceiptOrderIdRoute: typeof AuthenticatedReceiptOrderIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -230,6 +251,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedNotesRoute: AuthenticatedNotesRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedReceiptOrderIdRoute: AuthenticatedReceiptOrderIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
