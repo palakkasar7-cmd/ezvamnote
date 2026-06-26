@@ -1,4 +1,5 @@
 import type { Product } from "@/lib/products";
+import { useCoverName } from "@/lib/cover-names";
 
 const SUBJECT_SYMBOL: Record<Product["subject"], string> = {
   Physics: "F = ma",
@@ -7,8 +8,18 @@ const SUBJECT_SYMBOL: Record<Product["subject"], string> = {
   Biology: "DNA",
 };
 
-export function NotebookCover({ product, large = false }: { product: Product; large?: boolean }) {
+export function NotebookCover({
+  product,
+  large = false,
+  nameOverride,
+}: {
+  product: Product;
+  large?: boolean;
+  nameOverride?: string;
+}) {
   const symbol = SUBJECT_SYMBOL[product.subject];
+  const storedOverride = useCoverName(product.slug);
+  const displayName = (nameOverride ?? storedOverride ?? product.author).split(",")[0];
   return (
     <div
       className={`relative aspect-[3/4] w-full overflow-hidden rounded-sm border border-foreground bg-paper text-foreground shadow-[6px_6px_0_0_var(--color-foreground)] ${
@@ -42,7 +53,7 @@ export function NotebookCover({ product, large = false }: { product: Product; la
         </div>
 
         <div className="border-t border-foreground/30 pt-3">
-          <div className="hand text-2xl leading-none">{product.author.split(",")[0]}</div>
+          <div className="hand text-2xl leading-none">{displayName}</div>
           <div className="mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
             {product.pages} pages
           </div>
