@@ -76,8 +76,12 @@ export function useCart() {
   const parsed: CartMap = hydrated ? JSON.parse(map) : {};
   const items = Object.entries(parsed)
     .map(([slug, qty]) => {
-      const product = PRODUCTS.find((p) => p.slug === slug);
-      return product ? { product, qty } : null;
+      const base = PRODUCTS.find((p) => p.slug === slug);
+      if (!base) return null;
+      const price = getPriceSnapshot(slug) ?? base.price;
+      const originalPrice = getOriginalPriceSnapshot(slug) ?? base.originalPrice;
+      const product: Product = { ...base, price, originalPrice };
+      return { product, qty };
     })
     .filter(Boolean) as { product: Product; qty: number }[];
   const count = items.reduce((s, i) => s + i.qty, 0);
