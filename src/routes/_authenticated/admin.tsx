@@ -6,6 +6,7 @@ import { PRODUCTS, type Product } from "@/lib/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NotebookCover } from "@/components/NotebookCover";
+import { ChaptersManager } from "@/components/ChaptersManager";
 import {
   refreshCoverNames,
   saveCoverName,
