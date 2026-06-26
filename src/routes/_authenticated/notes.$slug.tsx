@@ -45,8 +45,13 @@ export const Route = createFileRoute("/_authenticated/notes/$slug")({
 
 function ProductPage() {
   const { product } = Route.useLoaderData();
+  const { price, originalPrice } = usePrice(product.slug, {
+    price: product.price,
+    originalPrice: product.originalPrice,
+  });
   const [added, setAdded] = useState(false);
   const related = PRODUCTS.filter((p) => p.subject === product.subject && p.slug !== product.slug).slice(0, 3);
+
 
   const handleAdd = () => {
     addToCart(product.slug);
