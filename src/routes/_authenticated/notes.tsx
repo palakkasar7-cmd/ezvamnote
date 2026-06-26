@@ -158,7 +158,7 @@ function NotesPage() {
                       onClick={() => {
                         addToCart(p.slug, 1);
                         toast.success("Heading to checkout", { description: p.title });
-                        navigate({ to: "/cart" });
+                        window.location.href = "/cart";
                       }}
                       className="flex-1 rounded-none"
                     >
