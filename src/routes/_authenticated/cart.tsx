@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
-import { useCart, setQty, removeFromCart } from "@/lib/cart";
+import { useCart, setQty, removeFromCart, type CartItem } from "@/lib/cart";
+import { useCoverName } from "@/lib/cover-names";
+
 
 
 export const Route = createFileRoute("/_authenticated/cart")({
