@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { NotebookCover } from "@/components/NotebookCover";
 import { useCart, setQty, removeFromCart } from "@/lib/cart";
+
 
 export const Route = createFileRoute("/_authenticated/cart")({
   head: () => ({
@@ -47,11 +49,11 @@ function CartPage() {
               <div className="divide-y divide-foreground border-y border-foreground">
                 {items.map(({ product, qty }) => (
                   <div key={product.slug} className="flex gap-6 py-6">
-                    <div className="w-24 shrink-0 border border-foreground bg-paper p-3">
-                      <div className="font-display text-xs">{product.subject}</div>
-                      <div className="hand mt-6 text-xl leading-none">{product.author.split(",")[0]}</div>
+                    <div className="w-24 shrink-0">
+                      <NotebookCover product={product} />
                     </div>
                     <div className="flex flex-1 flex-col">
+
                       <Link
                         to="/notes/$slug"
                         params={{ slug: product.slug }}
