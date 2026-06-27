@@ -118,44 +118,49 @@ function LibraryPage() {
                         {product?.subject ?? ""}
                       </div>
                     </div>
-                    {product && (
-                      <Link
-                        to="/notes/$slug"
-                        params={{ slug }}
-                        className="text-xs underline underline-offset-4"
-                      >
-                        View product
-                      </Link>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setOpenSlugs((s) => ({ ...s, [slug]: !s[slug] }))
+                      }
+                      className="inline-flex items-center gap-2 border border-foreground px-4 py-2 text-xs uppercase tracking-widest hover:bg-foreground hover:text-background"
+                    >
+                      {openSlugs[slug] ? "Close" : "Open"}
+                      <ChevronDown
+                        className={`h-3 w-3 transition-transform ${openSlugs[slug] ? "rotate-180" : ""}`}
+                      />
+                    </button>
                   </div>
-                  {chapters.length === 0 ? (
-                    <p className="p-6 text-sm text-muted-foreground">
-                      No chapters uploaded yet. Check back soon.
-                    </p>
-                  ) : (
-                    <ol className="divide-y divide-foreground/15">
-                      {chapters.map((c) => (
-                        <li
-                          key={c.id}
-                          className="flex items-center justify-between gap-4 px-6 py-3 text-sm"
-                        >
-                          <div className="flex items-center gap-4">
-                            <span className="w-8 text-muted-foreground">
-                              {String(c.chapter_number).padStart(2, "0")}
-                            </span>
-                            <span>{c.title}</span>
-                          </div>
-                          <a
-                            href={c.pdf_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="border border-foreground px-3 py-1 text-xs uppercase tracking-widest hover:bg-foreground hover:text-background"
+                  {openSlugs[slug] && (
+                    chapters.length === 0 ? (
+                      <p className="p-6 text-sm text-muted-foreground">
+                        No chapters uploaded yet. Check back soon.
+                      </p>
+                    ) : (
+                      <ol className="divide-y divide-foreground/15">
+                        {chapters.map((c) => (
+                          <li
+                            key={c.id}
+                            className="flex items-center justify-between gap-4 px-6 py-3 text-sm"
                           >
-                            Open PDF
-                          </a>
-                        </li>
-                      ))}
-                    </ol>
+                            <div className="flex items-center gap-4">
+                              <span className="w-8 text-muted-foreground">
+                                {String(c.chapter_number).padStart(2, "0")}
+                              </span>
+                              <span>{c.title}</span>
+                            </div>
+                            <a
+                              href={c.pdf_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="border border-foreground px-3 py-1 text-xs uppercase tracking-widest hover:bg-foreground hover:text-background"
+                            >
+                              Open PDF
+                            </a>
+                          </li>
+                        ))}
+                      </ol>
+                    )
                   )}
                 </div>
               );
