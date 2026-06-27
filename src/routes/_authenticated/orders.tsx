@@ -4,6 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { useCoverName } from "@/lib/cover-names";
+import { findProduct } from "@/lib/products";
+
 
 export const Route = createFileRoute("/_authenticated/orders")({
   ssr: false,
