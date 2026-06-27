@@ -25,6 +25,7 @@ type Chapter = { id: string; slug: string; chapter_number: number; title: string
 function LibraryPage() {
   const [orders, setOrders] = useState<ApprovedOrder[]>([]);
   const [chaptersBySlug, setChaptersBySlug] = useState<Record<string, Chapter[]>>({});
+  const [openSlugs, setOpenSlugs] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
