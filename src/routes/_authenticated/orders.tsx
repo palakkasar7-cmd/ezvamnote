@@ -4,9 +4,6 @@ import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { useCoverName } from "@/lib/cover-names";
-import { findProduct } from "@/lib/products";
-
 
 export const Route = createFileRoute("/_authenticated/orders")({
   ssr: false,
@@ -103,9 +100,10 @@ function OrdersPage() {
                     </td>
                     <td className="p-3 text-xs">
                       {o.items.map((it, i) => (
-                        <ItemLine key={i} slug={it.slug} fallbackTitle={it.title} qty={it.qty} />
+                        <div key={i}>
+                          {it.qty}× {it.title}
+                        </div>
                       ))}
-
                     </td>
                     <td className="p-3 font-medium">₹{o.amount}</td>
                     <td className="p-3">
@@ -142,11 +140,3 @@ function OrdersPage() {
     </div>
   );
 }
-
-function ItemLine({ slug, fallbackTitle, qty }: { slug: string; fallbackTitle: string; qty: number }) {
-  const coverName = useCoverName(slug);
-  const product = findProduct(slug);
-  const title = coverName?.trim() || product?.title || fallbackTitle;
-  return <div>{qty}× {title}</div>;
-}
-
