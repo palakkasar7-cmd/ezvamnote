@@ -94,6 +94,64 @@ function CartPage() {
   );
 }
 
+function CartRow({ product, qty }: { product: Product; qty: number }) {
+  const coverName = useCoverName(product.slug);
+  const displayTitle = coverName?.trim() ? coverName : product.title;
+  return (
+    <div className="flex gap-6 py-6">
+      <div className="w-24 shrink-0">
+        <NotebookCover product={product} />
+      </div>
+      <div className="flex flex-1 flex-col">
+        <Link
+          to="/notes/$slug"
+          params={{ slug: product.slug }}
+          className="font-display text-lg font-semibold hover:underline"
+        >
+          {displayTitle}
+        </Link>
+        <div className="mt-1 text-sm text-muted-foreground">
+          {product.type} · {product.pages} pages
+        </div>
+        <div className="mt-auto flex items-center gap-4 pt-4">
+          <div className="inline-flex items-center border border-foreground">
+            <button
+              onClick={() => setQty(product.slug, qty - 1)}
+              className="px-3 py-1 hover:bg-foreground hover:text-background"
+              aria-label="Decrease"
+            >
+              −
+            </button>
+            <span className="w-10 text-center text-sm">{qty}</span>
+            <button
+              onClick={() => setQty(product.slug, qty + 1)}
+              className="px-3 py-1 hover:bg-foreground hover:text-background"
+              aria-label="Increase"
+            >
+              +
+            </button>
+          </div>
+          <button
+            onClick={() => removeFromCart(product.slug)}
+            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground hover:underline"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+      <div className="text-right">
+        <div className="font-display text-xl font-medium">₹{product.price * qty}</div>
+        {product.originalPrice && (
+          <div className="text-xs text-muted-foreground line-through">
+            ₹{product.originalPrice * qty}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between">
