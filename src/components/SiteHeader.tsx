@@ -45,6 +45,8 @@ export function SiteHeader() {
           <Link to="/" className="hover:underline underline-offset-4">Home</Link>
           <Link to="/notes" className="hover:underline underline-offset-4">All Notes</Link>
           <Link to="/library" className="hover:underline underline-offset-4">My Purchases</Link>
+          <Link to="/orders" className="hover:underline underline-offset-4">Orders</Link>
+
           <a href="/#why" className="hover:underline underline-offset-4">Why handwritten</a>
           <a href="/#faq" className="hover:underline underline-offset-4">FAQ</a>
           {isAdmin && (

@@ -169,52 +169,19 @@ function LibraryPage() {
         )}
 
         {!loading && orders.length > 0 && (
-          <div className="mt-16">
-            <h2 className="font-display text-2xl font-semibold">Order history</h2>
-            <div className="mt-4 border border-foreground">
-              <table className="w-full text-sm">
-                <thead className="border-b border-foreground bg-foreground/5 text-left">
-                  <tr>
-                    <th className="p-3">Date</th>
-                    <th className="p-3">Items</th>
-                    <th className="p-3">Amount</th>
-                    <th className="p-3">Order</th>
-                    <th className="p-3">Receipt</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((o) => (
-                    <tr key={o.id} className="border-b border-foreground/20 align-top">
-                      <td className="p-3 text-xs">
-                        {new Date(o.approved_at ?? o.created_at).toLocaleString()}
-                      </td>
-                      <td className="p-3 text-xs">
-                        {o.items.map((it, i) => (
-                          <div key={i}>
-                            {it.qty}× {it.title}
-                          </div>
-                        ))}
-                      </td>
-                      <td className="p-3 font-medium">₹{o.amount}</td>
-                      <td className="p-3 text-xs text-muted-foreground">
-                        #{o.id.slice(0, 8)}
-                      </td>
-                      <td className="p-3 text-xs">
-                        <Link
-                          to="/receipt/$orderId"
-                          params={{ orderId: o.id }}
-                          className="underline underline-offset-4"
-                        >
-                          View
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div className="mt-12 flex items-center justify-between border-t border-foreground/30 pt-6">
+            <p className="text-sm text-muted-foreground">
+              Looking for past orders, pending payments, or receipts?
+            </p>
+            <Link
+              to="/orders"
+              className="inline-block border border-foreground px-4 py-2 text-xs uppercase tracking-widest hover:bg-foreground hover:text-background"
+            >
+              View order history →
+            </Link>
           </div>
         )}
+
       </div>
       <SiteFooter />
     </div>
