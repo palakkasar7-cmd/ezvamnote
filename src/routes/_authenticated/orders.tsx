@@ -103,10 +103,9 @@ function OrdersPage() {
                     </td>
                     <td className="p-3 text-xs">
                       {o.items.map((it, i) => (
-                        <div key={i}>
-                          {it.qty}× {it.title}
-                        </div>
+                        <ItemLine key={i} slug={it.slug} fallbackTitle={it.title} qty={it.qty} />
                       ))}
+
                     </td>
                     <td className="p-3 font-medium">₹{o.amount}</td>
                     <td className="p-3">
@@ -143,3 +142,11 @@ function OrdersPage() {
     </div>
   );
 }
+
+function ItemLine({ slug, fallbackTitle, qty }: { slug: string; fallbackTitle: string; qty: number }) {
+  const coverName = useCoverName(slug);
+  const product = findProduct(slug);
+  const title = coverName?.trim() || product?.title || fallbackTitle;
+  return <div>{qty}× {title}</div>;
+}
+
