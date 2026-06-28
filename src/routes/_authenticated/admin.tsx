@@ -609,3 +609,207 @@ function EditNameModal({
   );
 }
 
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+function CreateProductModal({
+  onClose,
+  onSaved,
+}: {
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [subject, setSubject] = useState<Subject>("Physics");
+  const [type, setType] = useState<NoteType>("Full Subject");
+  const [author, setAuthor] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [pages, setPages] = useState("100");
+  const [price, setPrice] = useState("199");
+  const [origPrice, setOrigPrice] = useState("");
+  const [highlights, setHighlights] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const effSlug = slugTouched ? slug : slugify(title);
+  const previewProduct: Product = {
+    slug: effSlug || "preview",
+    title: title || "Untitled notes",
+    subject,
+    type,
+    author: author || "Your name",
+    pages: parseInt(pages, 10) || 0,
+    price: parseInt(price, 10) || 0,
+    originalPrice: origPrice ? parseInt(origPrice, 10) : undefined,
+    rating: 5,
+    reviews: 0,
+    cover: subject.toLowerCase(),
+    tagline,
+    chapters: [],
+    highlights: [],
+  };
+
+  const handleSave = async () => {
+    if (!title.trim()) return toast.error("Title required");
+    if (!effSlug) return toast.error("Slug required");
+    const priceN = parseInt(price, 10);
+    if (!Number.isFinite(priceN) || priceN < 0) return toast.error("Valid price required");
+    const origN = origPrice.trim() === "" ? null : parseInt(origPrice, 10);
+    if (origN !== null && (!Number.isFinite(origN) || origN < 0)) return toast.error("Valid MRP");
+    setSaving(true);
+    try {
+      await createCustomProduct({
+        slug: effSlug,
+        title: title.trim(),
+        subject,
+        type,
+        author: author.trim(),
+        pages: parseInt(pages, 10) || 0,
+        price: priceN,
+        originalPrice: origN,
+        cover: subject.toLowerCase(),
+        tagline: tagline.trim(),
+        highlights: highlights
+          .split("\n")
+          .map((h) => h.trim())
+          .filter(Boolean),
+      });
+      toast.success("Product created");
+      onSaved();
+    } catch (e: any) {
+      toast.error(e.message ?? "Create failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="grid max-h-[90vh] w-full max-w-4xl gap-8 overflow-y-auto border border-foreground bg-background p-8 md:grid-cols-2"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">Live preview</div>
+          <div className="mt-4">
+            <NotebookCover product={previewProduct} large />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">New product</div>
+
+          <label className="text-sm font-medium">Title</label>
+          <Input
+            className="rounded-none"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. Physics — Wave Optics Mastery"
+            autoFocus
+          />
+
+          <label className="text-sm font-medium">Slug (URL)</label>
+          <Input
+            className="rounded-none"
+            value={effSlug}
+            onChange={(e) => {
+              setSlugTouched(true);
+              setSlug(slugify(e.target.value));
+            }}
+            placeholder="my-notes"
+          />
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-medium">Subject</label>
+              <select
+                className="mt-1 h-9 w-full border border-input bg-background px-2 text-sm"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value as Subject)}
+              >
+                {SUBJECTS.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Type</label>
+              <select
+                className="mt-1 h-9 w-full border border-input bg-background px-2 text-sm"
+                value={type}
+                onChange={(e) => setType(e.target.value as NoteType)}
+              >
+                {NOTE_TYPES.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <label className="text-sm font-medium">Author / cover name</label>
+          <Input
+            className="rounded-none"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            placeholder="Your name"
+          />
+
+          <label className="text-sm font-medium">Tagline</label>
+          <Input
+            className="rounded-none"
+            value={tagline}
+            onChange={(e) => setTagline(e.target.value)}
+            placeholder="One-line description"
+          />
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="text-sm font-medium">Pages</label>
+              <Input className="rounded-none" type="number" min={0} value={pages} onChange={(e) => setPages(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Price ₹</label>
+              <Input className="rounded-none" type="number" min={0} value={price} onChange={(e) => setPrice(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-sm font-medium">MRP ₹</label>
+              <Input className="rounded-none" type="number" min={0} value={origPrice} onChange={(e) => setOrigPrice(e.target.value)} placeholder="opt." />
+            </div>
+          </div>
+
+          <label className="text-sm font-medium">Highlights (one per line)</label>
+          <textarea
+            className="min-h-[80px] rounded-none border border-input bg-background p-2 text-sm"
+            value={highlights}
+            onChange={(e) => setHighlights(e.target.value)}
+            placeholder={"Hand-drawn diagrams\nQuick revision shortcuts"}
+          />
+
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button onClick={handleSave} disabled={saving} className="rounded-none">
+              {saving ? "Creating…" : "Create product"}
+            </Button>
+            <Button variant="ghost" onClick={onClose} disabled={saving} className="rounded-none">
+              Cancel
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            After creating, use the "Chapters" button on the new row to upload chapter PDFs.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
