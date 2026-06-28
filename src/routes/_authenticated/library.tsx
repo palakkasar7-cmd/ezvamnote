@@ -29,6 +29,9 @@ function LibraryPage() {
   const [orders, setOrders] = useState<ApprovedOrder[]>([]);
   const [chaptersBySlug, setChaptersBySlug] = useState<Record<string, Chapter[]>>({});
   const [openSlugs, setOpenSlugs] = useState<Record<string, boolean>>({});
+  const [productBySlug, setProductBySlug] = useState<Record<string, { title: string; subject: string }>>({});
+  const [zipping, setZipping] = useState<string | null>(null);
+  const [zipProgress, setZipProgress] = useState<{ done: number; total: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
