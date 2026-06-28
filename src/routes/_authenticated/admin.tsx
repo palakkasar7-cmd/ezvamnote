@@ -55,11 +55,15 @@ function AdminPage() {
   const [urlDrafts, setUrlDrafts] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Product | null>(null);
   const [chaptersFor, setChaptersFor] = useState<Product | null>(null);
+  const [creating, setCreating] = useState(false);
+  const customProducts = useCustomProducts();
+  const allProducts: Product[] = [...PRODUCTS, ...customProducts];
 
   const load = async () => {
     const [{ data: fileData }] = await Promise.all([
       supabase.from("note_files").select("*"),
       refreshCoverNames(),
+      loadCustomProducts(),
     ]);
     const map: Record<string, FileRow> = {};
     (fileData ?? []).forEach((r: any) => (map[r.slug] = r));
@@ -69,6 +73,17 @@ function AdminPage() {
   useEffect(() => {
     load();
   }, []);
+
+  const handleDeleteCustom = async (slug: string, title: string) => {
+    if (!confirm(`Delete "${title}"? This removes the product (chapters & PDF link kept).`)) return;
+    try {
+      await deleteCustomProduct(slug);
+      toast.success("Product deleted");
+      load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Delete failed");
+    }
+  };
 
   const handleSaveUrl = async (slug: string) => {
     const url = (urlDrafts[slug] ?? "").trim();
