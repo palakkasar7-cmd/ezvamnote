@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ProductQuickView } from "@/components/ProductQuickView";
 import { addToCart } from "@/lib/cart";
 import { PRODUCTS, SUBJECTS, NOTE_TYPES, type Subject, type NoteType, type Product } from "@/lib/products";
+import { useCustomProducts } from "@/lib/custom-products";
 
 
 
