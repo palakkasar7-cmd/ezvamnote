@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { NotebookCover } from "@/components/NotebookCover";
 import { PRODUCTS, findProduct } from "@/lib/products";
+import { fetchCustomProduct } from "@/lib/custom-products";
 import { addToCart } from "@/lib/cart";
 import { usePrice } from "@/lib/cover-names";
 import { Price } from "@/components/Price";
