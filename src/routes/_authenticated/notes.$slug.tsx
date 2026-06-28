@@ -13,8 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 
 export const Route = createFileRoute("/_authenticated/notes/$slug")({
-  loader: ({ params }) => {
-    const product = findProduct(params.slug);
+  loader: async ({ params }) => {
+    const product = findProduct(params.slug) ?? (await fetchCustomProduct(params.slug));
     if (!product) throw notFound();
     return { product };
   },
