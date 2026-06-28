@@ -62,10 +62,52 @@ function LibraryPage() {
           (grouped[c.slug] ||= []).push(c as Chapter);
         });
         setChaptersBySlug(grouped);
+
+        // Resolve product names (seed first, then custom fallback)
+        const map: Record<string, { title: string; subject: string }> = {};
+        await Promise.all(
+          slugs.map(async (s) => {
+            const p = findProduct(s);
+            if (p) {
+              map[s] = { title: p.title, subject: p.subject };
+            } else {
+              const c = await fetchCustomProduct(s);
+              if (c) map[s] = { title: c.title, subject: c.subject };
+            }
+          }),
+        );
+        setProductBySlug(map);
       }
       setLoading(false);
     })();
   }, []);
+
+  const handleDownloadAll = async (slug: string, subjectTitle: string) => {
+    const chapters = chaptersBySlug[slug] ?? [];
+    if (chapters.length === 0) {
+      toast.error("No chapters to download");
+      return;
+    }
+    setZipping(slug);
+    setZipProgress({ done: 0, total: chapters.length });
+    try {
+      const result = await downloadChaptersZip(subjectTitle, chapters, (done, total) =>
+        setZipProgress({ done, total }),
+      );
+      if (result.failed.length === 0) {
+        toast.success(`Downloaded ${result.ok} chapters as ZIP`);
+      } else {
+        toast.warning(
+          `${result.ok} downloaded · ${result.failed.length} blocked by host (links saved inside ZIP)`,
+        );
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "ZIP failed");
+    } finally {
+      setZipping(null);
+      setZipProgress(null);
+    }
+  };
 
   // Unique purchased subjects across all approved orders
   const purchasedSlugs = Array.from(
