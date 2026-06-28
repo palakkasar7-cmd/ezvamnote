@@ -139,7 +139,13 @@ function AdminPage() {
         Paste a PDF link for each note and edit the name shown on the cover.
       </p>
 
-      <div className="mt-10 border border-foreground">
+      <div className="mt-6 flex justify-end">
+        <Button onClick={() => setCreating(true)} className="rounded-none">
+          <Plus className="h-4 w-4" /> New product
+        </Button>
+      </div>
+
+      <div className="mt-4 border border-foreground">
         <table className="w-full text-sm">
           <thead className="border-b border-foreground bg-foreground/5">
             <tr className="text-left">
@@ -151,7 +157,8 @@ function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {PRODUCTS.map((p) => {
+            {allProducts.map((p) => {
+              const isCustom = !PRODUCTS.some((sp) => sp.slug === p.slug);
               const existing = files[p.slug];
               const override = getCoverNameSnapshot(p.slug);
               const priceOv = getPriceSnapshot(p.slug);
