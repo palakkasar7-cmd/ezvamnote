@@ -80,9 +80,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "NoteVault — Handwritten Std 12 & MHT-CET Notes" },
       { name: "description", content: "Topper-handwritten notes for Maharashtra Std 12 & MHT-CET. Physics, Chemistry, Mathematics, Biology. Delivered instantly as PDF." },
       { property: "og:title", content: "NoteVault — Handwritten Std 12 & MHT-CET Notes" },
-      { property: "og:description", content: "Topper-handwritten notes. Every chapter. Every derivation. One notebook." },
+      { property: "og:description", content: "Topper-handwritten notes for Maharashtra Std 12 & MHT-CET. Physics, Chemistry, Mathematics, Biology. Delivered instantly as PDF." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "NoteVault — Handwritten Std 12 & MHT-CET Notes" },
+      { name: "twitter:description", content: "Topper-handwritten notes for Maharashtra Std 12 & MHT-CET. Physics, Chemistry, Mathematics, Biology. Delivered instantly as PDF." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7fd8fc6c-ec0b-42aa-9038-7046e062c328/id-preview-d98ea93c--a4389e8c-bf66-4f62-aad2-58314bb41c22.lovable.app-1782656660531.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7fd8fc6c-ec0b-42aa-9038-7046e062c328/id-preview-d98ea93c--a4389e8c-bf66-4f62-aad2-58314bb41c22.lovable.app-1782656660531.png" },
     ],
     links: [
       {
