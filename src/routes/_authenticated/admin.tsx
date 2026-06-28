@@ -241,6 +241,15 @@ function AdminPage() {
                       >
                         Chapters
                       </Button>
+                      {isCustom && (
+                        <Button
+                          variant="outline"
+                          className="rounded-none text-destructive"
+                          onClick={() => handleDeleteCustom(p.slug, p.title)}
+                        >
+                          <Trash2 className="h-4 w-4" /> Delete
+                        </Button>
+                      )}
                       <div className="flex w-full max-w-xs gap-2">
                         <Input
                           type="url"
