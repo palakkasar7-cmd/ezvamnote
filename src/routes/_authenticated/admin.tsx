@@ -1,8 +1,8 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { PRODUCTS, type Product } from "@/lib/products";
+import { PRODUCTS, SUBJECTS, NOTE_TYPES, type Product, type Subject, type NoteType } from "@/lib/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NotebookCover } from "@/components/NotebookCover";
@@ -15,6 +15,13 @@ import {
   getPriceSnapshot,
   getOriginalPriceSnapshot,
 } from "@/lib/cover-names";
+import {
+  useCustomProducts,
+  loadCustomProducts,
+  refreshCustomProducts,
+  createCustomProduct,
+  deleteCustomProduct,
+} from "@/lib/custom-products";
 
 import { toast } from "sonner";
 
