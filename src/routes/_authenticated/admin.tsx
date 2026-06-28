@@ -302,6 +302,17 @@ function AdminPage() {
         />
       )}
 
+      {creating && (
+        <CreateProductModal
+          onClose={() => setCreating(false)}
+          onSaved={async () => {
+            setCreating(false);
+            await refreshCustomProducts();
+            load();
+          }}
+        />
+      )}
+
       <OrdersPanel />
     </div>
   );
