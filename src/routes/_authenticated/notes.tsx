@@ -37,7 +37,9 @@ function NotesPage() {
   const navigate = Route.useNavigate();
   const [quickView, setQuickView] = useState<Product | null>(null);
 
-  const filtered = PRODUCTS.filter(
+  const customProducts = useCustomProducts();
+  const all = [...PRODUCTS, ...customProducts];
+  const filtered = all.filter(
     (p) => (!subject || p.subject === subject) && (!type || p.type === type),
   );
 
