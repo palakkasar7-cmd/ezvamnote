@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { ArrowLeft, ChevronDown, Download } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { findProduct } from "@/lib/products";
+import { fetchCustomProduct } from "@/lib/custom-products";
+import { downloadChaptersZip } from "@/lib/download-zip";
 
 export const Route = createFileRoute("/_authenticated/library")({
   ssr: false,
