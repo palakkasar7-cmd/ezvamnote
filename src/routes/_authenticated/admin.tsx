@@ -169,7 +169,14 @@ function AdminPage() {
               return (
                 <tr key={p.slug} className="border-b border-foreground/20">
                   <td className="p-3 align-top">
-                    <div className="font-medium">{p.title}</div>
+                    <div className="font-medium">
+                      {p.title}
+                      {isCustom && (
+                        <span className="ml-2 border border-foreground px-1.5 py-0.5 text-[10px] uppercase tracking-widest">
+                          Custom
+                        </span>
+                      )}
+                    </div>
                     <div className="text-xs text-muted-foreground">{p.slug}</div>
                   </td>
                   <td className="p-3 align-top">
