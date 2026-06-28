@@ -1,5 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { PRODUCTS, type Product } from "./products";
+import { findCustomProduct } from "./custom-products";
 import {
   getPriceSnapshot,
   getOriginalPriceSnapshot,
