@@ -1,8 +1,8 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { PRODUCTS, type Product } from "@/lib/products";
+import { PRODUCTS, SUBJECTS, NOTE_TYPES, type Product, type Subject, type NoteType } from "@/lib/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NotebookCover } from "@/components/NotebookCover";
@@ -15,6 +15,13 @@ import {
   getPriceSnapshot,
   getOriginalPriceSnapshot,
 } from "@/lib/cover-names";
+import {
+  useCustomProducts,
+  loadCustomProducts,
+  refreshCustomProducts,
+  createCustomProduct,
+  deleteCustomProduct,
+} from "@/lib/custom-products";
 
 import { toast } from "sonner";
 
@@ -48,11 +55,15 @@ function AdminPage() {
   const [urlDrafts, setUrlDrafts] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Product | null>(null);
   const [chaptersFor, setChaptersFor] = useState<Product | null>(null);
+  const [creating, setCreating] = useState(false);
+  const customProducts = useCustomProducts();
+  const allProducts: Product[] = [...PRODUCTS, ...customProducts];
 
   const load = async () => {
     const [{ data: fileData }] = await Promise.all([
       supabase.from("note_files").select("*"),
       refreshCoverNames(),
+      loadCustomProducts(),
     ]);
     const map: Record<string, FileRow> = {};
     (fileData ?? []).forEach((r: any) => (map[r.slug] = r));
@@ -62,6 +73,17 @@ function AdminPage() {
   useEffect(() => {
     load();
   }, []);
+
+  const handleDeleteCustom = async (slug: string, title: string) => {
+    if (!confirm(`Delete "${title}"? This removes the product (chapters & PDF link kept).`)) return;
+    try {
+      await deleteCustomProduct(slug);
+      toast.success("Product deleted");
+      load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Delete failed");
+    }
+  };
 
   const handleSaveUrl = async (slug: string) => {
     const url = (urlDrafts[slug] ?? "").trim();
@@ -117,7 +139,13 @@ function AdminPage() {
         Paste a PDF link for each note and edit the name shown on the cover.
       </p>
 
-      <div className="mt-10 border border-foreground">
+      <div className="mt-6 flex justify-end">
+        <Button onClick={() => setCreating(true)} className="rounded-none">
+          <Plus className="h-4 w-4" /> New product
+        </Button>
+      </div>
+
+      <div className="mt-4 border border-foreground">
         <table className="w-full text-sm">
           <thead className="border-b border-foreground bg-foreground/5">
             <tr className="text-left">
@@ -129,7 +157,8 @@ function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {PRODUCTS.map((p) => {
+            {allProducts.map((p) => {
+              const isCustom = !PRODUCTS.some((sp) => sp.slug === p.slug);
               const existing = files[p.slug];
               const override = getCoverNameSnapshot(p.slug);
               const priceOv = getPriceSnapshot(p.slug);
@@ -140,7 +169,14 @@ function AdminPage() {
               return (
                 <tr key={p.slug} className="border-b border-foreground/20">
                   <td className="p-3 align-top">
-                    <div className="font-medium">{p.title}</div>
+                    <div className="font-medium">
+                      {p.title}
+                      {isCustom && (
+                        <span className="ml-2 border border-foreground px-1.5 py-0.5 text-[10px] uppercase tracking-widest">
+                          Custom
+                        </span>
+                      )}
+                    </div>
                     <div className="text-xs text-muted-foreground">{p.slug}</div>
                   </td>
                   <td className="p-3 align-top">
@@ -205,6 +241,15 @@ function AdminPage() {
                       >
                         Chapters
                       </Button>
+                      {isCustom && (
+                        <Button
+                          variant="outline"
+                          className="rounded-none text-destructive"
+                          onClick={() => handleDeleteCustom(p.slug, p.title)}
+                        >
+                          <Trash2 className="h-4 w-4" /> Delete
+                        </Button>
+                      )}
                       <div className="flex w-full max-w-xs gap-2">
                         <Input
                           type="url"
@@ -254,6 +299,17 @@ function AdminPage() {
         <ChaptersManager
           product={chaptersFor}
           onClose={() => setChaptersFor(null)}
+        />
+      )}
+
+      {creating && (
+        <CreateProductModal
+          onClose={() => setCreating(false)}
+          onSaved={async () => {
+            setCreating(false);
+            await refreshCustomProducts();
+            load();
+          }}
         />
       )}
 
@@ -552,4 +608,208 @@ function EditNameModal({
     </div>
   );
 }
+
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+function CreateProductModal({
+  onClose,
+  onSaved,
+}: {
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [subject, setSubject] = useState<Subject>("Physics");
+  const [type, setType] = useState<NoteType>("Full Subject");
+  const [author, setAuthor] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [pages, setPages] = useState("100");
+  const [price, setPrice] = useState("199");
+  const [origPrice, setOrigPrice] = useState("");
+  const [highlights, setHighlights] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const effSlug = slugTouched ? slug : slugify(title);
+  const previewProduct: Product = {
+    slug: effSlug || "preview",
+    title: title || "Untitled notes",
+    subject,
+    type,
+    author: author || "Your name",
+    pages: parseInt(pages, 10) || 0,
+    price: parseInt(price, 10) || 0,
+    originalPrice: origPrice ? parseInt(origPrice, 10) : undefined,
+    rating: 5,
+    reviews: 0,
+    cover: subject.toLowerCase(),
+    tagline,
+    chapters: [],
+    highlights: [],
+  };
+
+  const handleSave = async () => {
+    if (!title.trim()) return toast.error("Title required");
+    if (!effSlug) return toast.error("Slug required");
+    const priceN = parseInt(price, 10);
+    if (!Number.isFinite(priceN) || priceN < 0) return toast.error("Valid price required");
+    const origN = origPrice.trim() === "" ? null : parseInt(origPrice, 10);
+    if (origN !== null && (!Number.isFinite(origN) || origN < 0)) return toast.error("Valid MRP");
+    setSaving(true);
+    try {
+      await createCustomProduct({
+        slug: effSlug,
+        title: title.trim(),
+        subject,
+        type,
+        author: author.trim(),
+        pages: parseInt(pages, 10) || 0,
+        price: priceN,
+        originalPrice: origN,
+        cover: subject.toLowerCase(),
+        tagline: tagline.trim(),
+        highlights: highlights
+          .split("\n")
+          .map((h) => h.trim())
+          .filter(Boolean),
+      });
+      toast.success("Product created");
+      onSaved();
+    } catch (e: any) {
+      toast.error(e.message ?? "Create failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="grid max-h-[90vh] w-full max-w-4xl gap-8 overflow-y-auto border border-foreground bg-background p-8 md:grid-cols-2"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">Live preview</div>
+          <div className="mt-4">
+            <NotebookCover product={previewProduct} large />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">New product</div>
+
+          <label className="text-sm font-medium">Title</label>
+          <Input
+            className="rounded-none"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. Physics — Wave Optics Mastery"
+            autoFocus
+          />
+
+          <label className="text-sm font-medium">Slug (URL)</label>
+          <Input
+            className="rounded-none"
+            value={effSlug}
+            onChange={(e) => {
+              setSlugTouched(true);
+              setSlug(slugify(e.target.value));
+            }}
+            placeholder="my-notes"
+          />
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-medium">Subject</label>
+              <select
+                className="mt-1 h-9 w-full border border-input bg-background px-2 text-sm"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value as Subject)}
+              >
+                {SUBJECTS.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Type</label>
+              <select
+                className="mt-1 h-9 w-full border border-input bg-background px-2 text-sm"
+                value={type}
+                onChange={(e) => setType(e.target.value as NoteType)}
+              >
+                {NOTE_TYPES.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <label className="text-sm font-medium">Author / cover name</label>
+          <Input
+            className="rounded-none"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            placeholder="Your name"
+          />
+
+          <label className="text-sm font-medium">Tagline</label>
+          <Input
+            className="rounded-none"
+            value={tagline}
+            onChange={(e) => setTagline(e.target.value)}
+            placeholder="One-line description"
+          />
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="text-sm font-medium">Pages</label>
+              <Input className="rounded-none" type="number" min={0} value={pages} onChange={(e) => setPages(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Price ₹</label>
+              <Input className="rounded-none" type="number" min={0} value={price} onChange={(e) => setPrice(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-sm font-medium">MRP ₹</label>
+              <Input className="rounded-none" type="number" min={0} value={origPrice} onChange={(e) => setOrigPrice(e.target.value)} placeholder="opt." />
+            </div>
+          </div>
+
+          <label className="text-sm font-medium">Highlights (one per line)</label>
+          <textarea
+            className="min-h-[80px] rounded-none border border-input bg-background p-2 text-sm"
+            value={highlights}
+            onChange={(e) => setHighlights(e.target.value)}
+            placeholder={"Hand-drawn diagrams\nQuick revision shortcuts"}
+          />
+
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button onClick={handleSave} disabled={saving} className="rounded-none">
+              {saving ? "Creating…" : "Create product"}
+            </Button>
+            <Button variant="ghost" onClick={onClose} disabled={saving} className="rounded-none">
+              Cancel
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            After creating, use the "Chapters" button on the new row to upload chapter PDFs.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 

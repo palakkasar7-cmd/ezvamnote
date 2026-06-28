@@ -1,5 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { PRODUCTS, type Product } from "./products";
+import { findCustomProduct } from "./custom-products";
 import {
   getPriceSnapshot,
   getOriginalPriceSnapshot,
@@ -76,7 +77,7 @@ export function useCart() {
   const parsed: CartMap = hydrated ? JSON.parse(map) : {};
   const items = Object.entries(parsed)
     .map(([slug, qty]) => {
-      const base = PRODUCTS.find((p) => p.slug === slug);
+      const base = PRODUCTS.find((p) => p.slug === slug) ?? findCustomProduct(slug);
       if (!base) return null;
       const price = getPriceSnapshot(slug) ?? base.price;
       const originalPrice = getOriginalPriceSnapshot(slug) ?? base.originalPrice;

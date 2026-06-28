@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ProductQuickView } from "@/components/ProductQuickView";
 import { addToCart } from "@/lib/cart";
 import { PRODUCTS, SUBJECTS, NOTE_TYPES, type Subject, type NoteType, type Product } from "@/lib/products";
+import { useCustomProducts } from "@/lib/custom-products";
 
 
 
@@ -36,7 +37,9 @@ function NotesPage() {
   const navigate = Route.useNavigate();
   const [quickView, setQuickView] = useState<Product | null>(null);
 
-  const filtered = PRODUCTS.filter(
+  const customProducts = useCustomProducts();
+  const all = [...PRODUCTS, ...customProducts];
+  const filtered = all.filter(
     (p) => (!subject || p.subject === subject) && (!type || p.type === type),
   );
 

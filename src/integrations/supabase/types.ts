@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      custom_products: {
+        Row: {
+          author: string
+          chapters: string[]
+          cover: string
+          created_at: string
+          created_by: string | null
+          highlights: string[]
+          id: string
+          original_price: number | null
+          pages: number
+          price: number
+          rating: number
+          reviews: number
+          slug: string
+          subject: string
+          tagline: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string
+          chapters?: string[]
+          cover?: string
+          created_at?: string
+          created_by?: string | null
+          highlights?: string[]
+          id?: string
+          original_price?: number | null
+          pages?: number
+          price?: number
+          rating?: number
+          reviews?: number
+          slug: string
+          subject: string
+          tagline?: string
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          chapters?: string[]
+          cover?: string
+          created_at?: string
+          created_by?: string | null
+          highlights?: string[]
+          id?: string
+          original_price?: number | null
+          pages?: number
+          price?: number
+          rating?: number
+          reviews?: number
+          slug?: string
+          subject?: string
+          tagline?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       note_chapters: {
         Row: {
           chapter_number: number
