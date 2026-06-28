@@ -153,31 +153,45 @@ function LibraryPage() {
         {!loading && purchasedSlugs.length > 0 && (
           <div className="mt-10 space-y-10">
             {purchasedSlugs.map((slug) => {
-              const product = findProduct(slug);
+              const seed = findProduct(slug);
+              const resolved = productBySlug[slug];
+              const title = seed?.title ?? resolved?.title ?? slug;
+              const subject = seed?.subject ?? resolved?.subject ?? "";
               const chapters = chaptersBySlug[slug] ?? [];
+              const isOpen = openSlugs[slug];
+              const isZipping = zipping === slug;
               return (
                 <div key={slug} className="border border-foreground">
-                  <div className="flex items-center justify-between border-b border-foreground bg-foreground/5 px-6 py-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-foreground bg-foreground/5 px-6 py-4">
                     <div>
-                      <div className="font-display text-xl font-semibold">
-                        {product?.title ?? slug}
-                      </div>
+                      <div className="font-display text-xl font-semibold">{title}</div>
                       <div className="text-xs uppercase tracking-widest text-muted-foreground">
-                        {product?.subject ?? ""}
+                        {subject}
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setOpenSlugs((s) => ({ ...s, [slug]: !s[slug] }))
-                      }
-                      className="inline-flex items-center gap-2 border border-foreground px-4 py-2 text-xs uppercase tracking-widest hover:bg-foreground hover:text-background"
-                    >
-                      {openSlugs[slug] ? "Close" : "Open"}
-                      <ChevronDown
-                        className={`h-3 w-3 transition-transform ${openSlugs[slug] ? "rotate-180" : ""}`}
-                      />
-                    </button>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={isZipping || chapters.length === 0}
+                        onClick={() => handleDownloadAll(slug, title)}
+                        className="inline-flex items-center gap-2 border border-foreground px-4 py-2 text-xs uppercase tracking-widest hover:bg-foreground hover:text-background disabled:opacity-50"
+                      >
+                        <Download className="h-3 w-3" />
+                        {isZipping
+                          ? `Zipping ${zipProgress?.done ?? 0}/${zipProgress?.total ?? 0}`
+                          : "Download all"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setOpenSlugs((s) => ({ ...s, [slug]: !s[slug] }))}
+                        className="inline-flex items-center gap-2 border border-foreground px-4 py-2 text-xs uppercase tracking-widest hover:bg-foreground hover:text-background"
+                      >
+                        {isOpen ? "Close" : "Open"}
+                        <ChevronDown
+                          className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                        />
+                      </button>
+                    </div>
                   </div>
                   {openSlugs[slug] && (
                     chapters.length === 0 ? (
