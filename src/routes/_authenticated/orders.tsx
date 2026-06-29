@@ -145,6 +145,15 @@ function OrdersPage() {
                         <span className="text-muted-foreground">—</span>
                       )}
                     </td>
+                    <td className="p-3 text-xs">
+                      <button
+                        onClick={() => handleDelete(o.id)}
+                        aria-label="Delete order"
+                        className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
