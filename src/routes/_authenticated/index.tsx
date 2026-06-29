@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -36,21 +37,45 @@ function HomePage() {
       {/* HERO */}
       <section className="paper-grain relative overflow-hidden border-b border-foreground">
         <div className="mx-auto grid max-w-7xl gap-12 px-4 py-12 sm:px-6 sm:py-20 md:grid-cols-12 md:py-28">
-          <div className="md:col-span-7">
-            <div className="inline-flex max-w-full items-center gap-2 border border-foreground bg-background px-3 py-1 text-[10px] uppercase tracking-[0.2em] sm:text-xs sm:tracking-[0.25em]">
+          <motion.div
+            className="md:col-span-7"
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+            }}
+          >
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="inline-flex max-w-full items-center gap-2 border border-foreground bg-background px-3 py-1 text-[10px] uppercase tracking-[0.2em] sm:text-xs sm:tracking-[0.25em]"
+            >
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />
               <span className="truncate">MHT-CET · Std 12 · Maharashtra Board</span>
-            </div>
-            <h1 className="mt-6 font-display text-[2.5rem] font-medium leading-[1] tracking-tight sm:text-5xl md:text-7xl">
+            </motion.div>
+            <motion.h1
+              variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              className="mt-6 font-display text-[2.5rem] font-medium leading-[1] tracking-tight sm:text-5xl md:text-7xl"
+            >
               Topper&rsquo;s <span className="ink-underline">handwritten</span> notes.
               <br />
               Now in your hands.
-            </h1>
-            <p className="mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
+            </motion.h1>
+            <motion.p
+              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="mt-6 max-w-xl text-base text-muted-foreground sm:text-lg"
+            >
               Every chapter, every derivation, every named-reaction — written by hand by
               99-percentilers. Photographed sharp, delivered as PDF in seconds.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4 sm:mt-10">
+            </motion.p>
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="mt-8 flex flex-wrap items-center gap-4 sm:mt-10"
+            >
               <Link
                 to="/notes"
                 className="inline-flex items-center gap-3 border border-foreground bg-foreground px-6 py-3 text-sm font-medium uppercase tracking-widest text-background transition hover:bg-background hover:text-foreground"
@@ -60,30 +85,54 @@ function HomePage() {
               <div className="hand text-xl leading-none sm:text-2xl">
                 ₹149 onwards · instant PDF
               </div>
-            </div>
+            </motion.div>
 
-            <div className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-foreground pt-6 sm:mt-14 sm:gap-6">
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-foreground pt-6 sm:mt-14 sm:gap-6"
+            >
               <Stat n="12k+" label="students" />
               <Stat n="4.9★" label="avg. rating" />
               <Stat n="60s" label="delivery" />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          {/* notebook stack */}
+          {/* notebook stack — books fall from above */}
           <div className="relative mt-4 md:col-span-5 md:mt-0">
-            <div className="relative mx-auto max-w-[260px] sm:max-w-sm">
-              <div className="absolute -left-4 top-4 -rotate-6 opacity-90 sm:-left-6 sm:top-6">
+            <div className="relative mx-auto max-w-[260px] sm:max-w-sm min-h-[320px] sm:min-h-[380px]">
+              <motion.div
+                className="absolute -left-4 top-4 sm:-left-6 sm:top-6"
+                initial={{ y: -500, rotate: -25, opacity: 0 }}
+                animate={{ y: 0, rotate: -6, opacity: 0.9 }}
+                transition={{ type: "spring", stiffness: 120, damping: 14, delay: 0.2 }}
+              >
                 <NotebookCover product={featured[1]} />
-              </div>
-              <div className="absolute -right-3 top-2 rotate-3 opacity-95 sm:-right-4 sm:top-3">
+              </motion.div>
+              <motion.div
+                className="absolute -right-3 top-2 sm:-right-4 sm:top-3"
+                initial={{ y: -600, rotate: 20, opacity: 0 }}
+                animate={{ y: 0, rotate: 3, opacity: 0.95 }}
+                transition={{ type: "spring", stiffness: 120, damping: 14, delay: 0.45 }}
+              >
                 <NotebookCover product={featured[2]} />
-              </div>
-              <div className="relative">
+              </motion.div>
+              <motion.div
+                className="relative"
+                initial={{ y: -700, rotate: -8, opacity: 0 }}
+                animate={{ y: 0, rotate: 0, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 130, damping: 16, delay: 0.7 }}
+              >
                 <NotebookCover product={featured[0]} large />
-              </div>
-              <div className="hand absolute -bottom-10 right-0 max-w-[14ch] -rotate-3 text-xl sm:text-2xl">
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.4 }}
+                className="hand absolute -bottom-10 right-0 max-w-[14ch] -rotate-3 text-xl sm:text-2xl"
+              >
                 ↗ this one&rsquo;s the bestseller
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
