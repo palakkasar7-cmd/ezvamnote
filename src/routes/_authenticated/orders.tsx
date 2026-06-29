@@ -47,6 +47,19 @@ function OrdersPage() {
     })();
   }, []);
 
+  async function handleDelete(id: string) {
+    if (!confirm("Delete this order from your history? This cannot be undone.")) return;
+    const prev = orders;
+    setOrders((o) => o.filter((x) => x.id !== id));
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) {
+      setOrders(prev);
+      toast.error("Could not delete order");
+    } else {
+      toast.success("Order deleted");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
