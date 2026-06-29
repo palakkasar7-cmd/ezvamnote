@@ -35,34 +35,34 @@ function HomePage() {
 
       {/* HERO */}
       <section className="paper-grain relative overflow-hidden border-b border-foreground">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-12 md:py-28">
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-12 sm:px-6 sm:py-20 md:grid-cols-12 md:py-28">
           <div className="md:col-span-7">
-            <div className="inline-flex items-center gap-2 border border-foreground bg-background px-3 py-1 text-xs uppercase tracking-[0.25em]">
-              <span className="h-1.5 w-1.5 rounded-full bg-foreground" />
-              MHT-CET · Std 12 · Maharashtra Board
+            <div className="inline-flex max-w-full items-center gap-2 border border-foreground bg-background px-3 py-1 text-[10px] uppercase tracking-[0.2em] sm:text-xs sm:tracking-[0.25em]">
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />
+              <span className="truncate">MHT-CET · Std 12 · Maharashtra Board</span>
             </div>
-            <h1 className="mt-6 font-display text-5xl font-medium leading-[0.95] tracking-tight md:text-7xl">
+            <h1 className="mt-6 font-display text-[2.5rem] font-medium leading-[1] tracking-tight sm:text-5xl md:text-7xl">
               Topper&rsquo;s <span className="ink-underline">handwritten</span> notes.
               <br />
               Now in your hands.
             </h1>
-            <p className="mt-6 max-w-xl text-lg text-muted-foreground">
+            <p className="mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
               Every chapter, every derivation, every named-reaction — written by hand by
               99-percentilers. Photographed sharp, delivered as PDF in seconds.
             </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="mt-8 flex flex-wrap items-center gap-4 sm:mt-10">
               <Link
                 to="/notes"
                 className="inline-flex items-center gap-3 border border-foreground bg-foreground px-6 py-3 text-sm font-medium uppercase tracking-widest text-background transition hover:bg-background hover:text-foreground"
               >
                 Browse all notes →
               </Link>
-              <div className="hand text-2xl leading-none">
+              <div className="hand text-xl leading-none sm:text-2xl">
                 ₹149 onwards · instant PDF
               </div>
             </div>
 
-            <div className="mt-14 grid max-w-md grid-cols-3 gap-6 border-t border-foreground pt-6">
+            <div className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-foreground pt-6 sm:mt-14 sm:gap-6">
               <Stat n="12k+" label="students" />
               <Stat n="4.9★" label="avg. rating" />
               <Stat n="60s" label="delivery" />
@@ -70,18 +70,18 @@ function HomePage() {
           </div>
 
           {/* notebook stack */}
-          <div className="relative md:col-span-5">
-            <div className="relative mx-auto max-w-sm">
-              <div className="absolute -left-6 top-6 -rotate-6 opacity-90">
+          <div className="relative mt-4 md:col-span-5 md:mt-0">
+            <div className="relative mx-auto max-w-[260px] sm:max-w-sm">
+              <div className="absolute -left-4 top-4 -rotate-6 opacity-90 sm:-left-6 sm:top-6">
                 <NotebookCover product={featured[1]} />
               </div>
-              <div className="absolute -right-4 top-3 rotate-3 opacity-95">
+              <div className="absolute -right-3 top-2 rotate-3 opacity-95 sm:-right-4 sm:top-3">
                 <NotebookCover product={featured[2]} />
               </div>
               <div className="relative">
                 <NotebookCover product={featured[0]} large />
               </div>
-              <div className="hand absolute -bottom-10 right-0 max-w-[14ch] -rotate-3 text-2xl">
+              <div className="hand absolute -bottom-10 right-0 max-w-[14ch] -rotate-3 text-xl sm:text-2xl">
                 ↗ this one&rsquo;s the bestseller
               </div>
             </div>
