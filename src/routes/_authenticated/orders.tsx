@@ -104,6 +104,8 @@ function OrdersPage() {
                   <th className="p-3">Status</th>
                   <th className="p-3">Order</th>
                   <th className="p-3">Receipt</th>
+                  <th className="p-3"></th>
+
                 </tr>
               </thead>
               <tbody>
