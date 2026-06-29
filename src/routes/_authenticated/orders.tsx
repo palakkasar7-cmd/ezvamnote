@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -46,6 +47,19 @@ function OrdersPage() {
     })();
   }, []);
 
+  async function handleDelete(id: string) {
+    if (!confirm("Delete this order from your history? This cannot be undone.")) return;
+    const prev = orders;
+    setOrders((o) => o.filter((x) => x.id !== id));
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) {
+      setOrders(prev);
+      toast.error("Could not delete order");
+    } else {
+      toast.success("Order deleted");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
@@ -90,6 +104,8 @@ function OrdersPage() {
                   <th className="p-3">Status</th>
                   <th className="p-3">Order</th>
                   <th className="p-3">Receipt</th>
+                  <th className="p-3"></th>
+
                 </tr>
               </thead>
               <tbody>
@@ -128,6 +144,15 @@ function OrdersPage() {
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
+                    </td>
+                    <td className="p-3 text-xs">
+                      <button
+                        onClick={() => handleDelete(o.id)}
+                        aria-label="Delete order"
+                        className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}

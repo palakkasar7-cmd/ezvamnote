@@ -1,0 +1,1 @@
+CREATE POLICY "Users delete own orders" ON public.orders FOR DELETE TO authenticated USING (auth.uid() = user_id OR has_role(auth.uid(), 'admin'::app_role));
